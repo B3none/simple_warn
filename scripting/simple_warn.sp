@@ -22,11 +22,11 @@ ConVar sm_warn_mictoban = null;
  
 public Plugin myinfo =
 {
-	name = 			"Simple Warnings",
-	author = 			"Potatoz",
+	name = 		"Simple Warnings",
+	author = 	"Potatoz",
 	description = 	"Allows Admins to warn players",
-	version = 		"1.1",
-	url = 				"https://forums.alliedmods.net/showthread.php?t=294358"
+	version = 	"1.1",
+	url = 		"https://forums.alliedmods.net/showthread.php?t=294358"
 };
 
 
@@ -42,12 +42,12 @@ public void OnPluginStart()
 	HookEvent("round_start", OnRoundStart, EventHookMode_PostNoCopy);
 	
 	sm_warn_maxwarnings_enabled = 	CreateConVar("sm_warn_maxwarnings_enabled", "1", "Enable automatic ban after max amount of warnings reached? 1 = Enabled 0 = Disabled, Default = 1");
-	sm_warn_maxwarnings =				CreateConVar("sm_warn_maxwarnings", "0", "Max amount of total warnings before banning a player (if enabled), 0 = Disabled, Default = 0");
-	sm_warn_maxwarnings_reset = 		CreateConVar("sm_warn_maxwarnings_reset", "1", "Reset warnings after automatic ban? 1 = Enabled 0 = Disabled, Default = 1");
-	sm_warn_banduration = 				CreateConVar("sm_warn_banduration", "15", "How long shall a player be banned after recieving max amount of warnings (in minutes)? Default = 15");
-	sm_warn_maxroundwarnings = 		CreateConVar("sm_warn_maxroundwarnings", "3", "Max amount of warnings in a single round before banning a player (if enabled), Default = 3");
-	sm_warn_mic = 						CreateConVar("sm_warn_mic", "0", "Enable mic warnings? 1 = Enabled 0 = Disabled, Default = 0");
-	sm_warn_mictoban = 					CreateConVar("sm_warn_mictoban", "0", "Will a mic warning lead to a ban? 1 = Yes | 0 = No, Default = 0");
+	sm_warn_maxwarnings =		CreateConVar("sm_warn_maxwarnings", "0", "Max amount of total warnings before banning a player (if enabled), 0 = Disabled, Default = 0");
+	sm_warn_maxwarnings_reset = 	CreateConVar("sm_warn_maxwarnings_reset", "1", "Reset warnings after automatic ban? 1 = Enabled 0 = Disabled, Default = 1");
+	sm_warn_banduration = 		CreateConVar("sm_warn_banduration", "15", "How long shall a player be banned after recieving max amount of warnings (in minutes)? Default = 15");
+	sm_warn_maxroundwarnings = 	CreateConVar("sm_warn_maxroundwarnings", "3", "Max amount of warnings in a single round before banning a player (if enabled), Default = 3");
+	sm_warn_mic = 			CreateConVar("sm_warn_mic", "0", "Enable mic warnings? 1 = Enabled 0 = Disabled, Default = 0");
+	sm_warn_mictoban = 		CreateConVar("sm_warn_mictoban", "0", "Will a mic warning lead to a ban? 1 = Yes | 0 = No, Default = 0");
 	AutoExecConfig(true, "plugin_simplewarnings");
 }
 
@@ -286,6 +286,7 @@ public Action Command_ResetWarnings(int client, int args)
 	PrintToChat(client, " \x07*\x01 You have reset \x07%N \x01warning(s).", target);
 	PrintToChat(target, " \x07* %N \x01 has reset your warning(s)", client);
 	warnings[target] = 0;
+	warnings_mic[target] = 0;
 	roundwarnings[target] = 0;
 	
 	return Plugin_Handled;
