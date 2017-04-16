@@ -13,6 +13,10 @@
 int warnings[MAXPLAYERS+1];
 int warnings_mic[MAXPLAYERS+1]; 
 int roundwarnings[MAXPLAYERS+1];
+bool b_IsPlural[MAXPLAYERS+1][2];
+
+#define WARNINGS 0
+#define MIC_WARNINGS 1
 
 ConVar sm_warn_maxwarnings_enabled = null;
 ConVar sm_warn_maxwarnings = null;
@@ -89,6 +93,8 @@ public OnMapStart()
 			if (IsClientInGame(i))
 			{
 				roundwarnings[i] = 0;
+				b_IsPlural[i][WARNINGS] = true;
+				b_IsPlural[i][MIC_WARNINGS] = true;
 			}
 		}
 	}
@@ -143,21 +149,24 @@ public Action Command_Warn(int client, int args)
 	PrintToChat(client, "%s\x07*\x01 You have warned \x07%N \x01for reason: %s", TAG_MESSAGE, target, arg2);
 	PrintToChat(target, "%s\x07*\x01 You have been warned by \x07%N \x01for reason: %s", TAG_MESSAGE, client, arg2);
 	
-	if(roundwarnings[target] >= 2)
+	if(warnings[target] == 1)
 	{
-		PrintToChat(target, "%s\x07*\x01 You currently have \x07%d \x01warning(s).", TAG_MESSAGE, warnings[target]);
+		b_IsPlural[target][WARNINGS] = false;
 	}
 	
-	else if(roundwarnings[target] == 1)
+	if(warnings_mic[target] == 1)
 	{
-		PrintToChat(target, "%s\x07*\x01 You currently have 1 warning.",  TAG_MESSAGE);
+		b_IsPlural[target][MIC_WARNINGS] = false;
 	}
+	
+	PrintToChat(target, "%s\x07*\x01 You currently have \x07%d \x01", b_IsPlural[target][WARNINGS] ? "warnings.":"warning.", TAG_MESSAGE, warnings[target]);
 	
 	for(new i = 1; i <= MaxClients; i++)
 	{
 		if (IsClientInGame(i))
 		{
-			if (CheckCommandAccess(i, "PRINT_ONLY_TO_ADMIN", ADMFLAG_GENERIC, true)) {
+			if (CheckCommandAccess(i, "PRINT_ONLY_TO_ADMIN", ADMFLAG_GENERIC, true))
+			{
 				if(i != client)
 				{
 					PrintToChat(i, "%s\x07* %N\x01 has warned \x07%N \x01for reason: %s", TAG_MESSAGE, client, target, arg2);
@@ -234,15 +243,19 @@ public Action Command_Warn_Mic(int client, int args)
 		PrintToChat(client, "%s\x07*\x01 You have mic warned \x07%N \x01for reason: %s", TAG_MESSAGE, target, arg2);
 		PrintToChat(target, "%s\x07*\x01 You have been mic warned by \x07%N \x01for reason: %s", TAG_MESSAGE, client, arg2);
 		
-		if(roundwarnings[target] >= 2)
+		
+		if(warnings[target] == 1)
 		{
-			PrintToChat(target, "%s\x07*\x01 You currently have \x07%d \x01warnings.", TAG_MESSAGE, warnings[target]);
+			b_IsPlural[target][WARNINGS] = false;
 		}
 		
-		else if(roundwarnings[target] == 1)
+		if(warnings_mic[target] == 1)
 		{
-			PrintToChat(target, "%s\x07*\x01 You currently have 1 warning.", TAG_MESSAGE);
+			b_IsPlural[target][MIC_WARNINGS] = false;
 		}
+		
+		PrintToChat(target, "%s\x07*\x01 You currently have \x07%d \x01", b_IsPlural[target][MIC_WARNINGS] ? "warnings":"warning", TAG_MESSAGE, warnings[target]);
+		
 		
 		for(new i = 1; i <= MaxClients; i++)
 		{
@@ -350,7 +363,18 @@ public Action Command_Warnings(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	PrintToChat(client, "%s\x07* %N\x01 has \x07%d \x01warning(s) and \x07%d \x01 mic warning(s) on record.", TAG_MESSAGE, target, warnings[target], warnings_mic[target]);
+	if(warnings[target] == 1)
+	{
+		b_IsPlural[target][WARNINGS] = false;
+	}
+	
+	if(warnings_mic[target] == 1)
+	{
+		b_IsPlural[target][MIC_WARNINGS] = false;
+	}
+	
+	PrintToChat(client, "%s\x07* %N\x01 has \x07%d \x01", b_IsPlural[target][WARNINGS] ? "warnings":"warning", " and \x07%d \x01mic", b_IsPlural[target][MIC_WARNINGS] ? "warnings":"warning", " on record.", TAG_MESSAGE, target, warnings[target], warnings_mic[target]);
+	
 	
 	return Plugin_Handled;
 }
