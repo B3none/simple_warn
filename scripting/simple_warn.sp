@@ -21,6 +21,7 @@ ConVar sm_warn_banduration = null;
 ConVar sm_warn_maxroundwarnings = null;
 ConVar sm_warn_mic = null;
 ConVar sm_warn_mictoban = null;
+ConVar sm_warn_microundtotal = null;
  
 public Plugin myinfo =
 {
@@ -50,6 +51,7 @@ public void OnPluginStart()
 	sm_warn_maxroundwarnings = 	CreateConVar("sm_warn_maxroundwarnings", "3", "Max amount of warnings in a single round before banning a player (if enabled), Default = 3");
 	sm_warn_mic = 			CreateConVar("sm_warn_mic", "0", "Enable mic warnings? 1 = Enabled 0 = Disabled, Default = 0");
 	sm_warn_mictoban = 		CreateConVar("sm_warn_mictoban", "0", "Will a mic warning lead to a ban? 1 = Yes | 0 = No, Default = 0");
+	sm_warn_microundtotal = 		CreateConVar("sm_warn_microundtotal", "0", "Will a mic warning add to a players round warnings? 1 = Yes | 0 = No, Default = 0");
 	AutoExecConfig(true, "plugin_simplewarnings");
 }
 
@@ -198,7 +200,12 @@ public Action Command_Warn_Mic(int client, int args)
 		}
 		
 		warnings_mic[target]++;
-		roundwarnings[target]++;
+		
+		if(GetConVarBool(sm_warn_microundtotal))
+		{
+			roundwarnings[target]++;
+		}
+		
 		PrintToChat(client, "%s\x07*\x01 You have mic warned \x07%N \x01for reason: %s", TAG_MESSAGE, target, arg2);
 		PrintToChat(target, "%s\x07*\x01 You have been mic warned by \x07%N \x01for reason: %s", TAG_MESSAGE, client, arg2);
 		
@@ -249,12 +256,15 @@ public Action Command_Warn_Mic(int client, int args)
 			{
 				if(GetConVarInt(sm_warn_maxwarnings_reset) == 1)
 				{
-					warnings[target] = 0;
 					warnings_mic[target] = 0;
-					roundwarnings[target] = 0;
+					
+					if(GetConVarBool(sm_warn_microundtotal))
+					{
+						roundwarnings[target] = 0;
+					}
 				}
 				BaseComm_SetClientMute(client, true);
-				PrintToChat(client, "%sYou were Mic Warned too many times, muted!", TAG_MESSAGE);
+				PrintToChat(client, "%s You were Mic Warned too many times, muted!", TAG_MESSAGE);
 				
 				if(GetConVarBool(sm_warn_mictoban))
 				{
@@ -289,8 +299,8 @@ public Action Command_ResetWarnings(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	PrintToChat(client, "%s\x07*\x01 You have reset \x07%N \x01warning(s).", TAG_MESSAGE, target);
-	PrintToChat(target, "%s\x07* %N \x01 has reset your warning(s)", TAG_MESSAGE, client);
+	PrintToChat(client, "%s\x07*\x01 You have reset all of \x07%N \x01warning(s).", TAG_MESSAGE, target);
+	PrintToChat(target, "%s\x07* %N \x01 has reset all of your warning(s)", TAG_MESSAGE, client);
 	warnings[target] = 0;
 	warnings_mic[target] = 0;
 	roundwarnings[target] = 0;
