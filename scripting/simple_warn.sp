@@ -7,6 +7,7 @@
 #include <sdktools>
 #include <basecomm>
 #pragma semicolon 1
+#pragma newdecls required
 
 #define TAG_MESSAGE "[\x04Warnings\x01]"
  
@@ -45,7 +46,7 @@ public void OnPluginStart()
 	RegAdminCmd("sm_warn", Command_Warn, ADMFLAG_BAN);
 	RegAdminCmd("sm_warnmic", Command_Warn_Mic, ADMFLAG_BAN);
 	
-	// RegConsoleCmd("sm_boolvalue", Print_Bool);
+	RegConsoleCmd("sm_boolvalue", Print_Bool);
 	
 	RegAdminCmd("sm_resetwarnings", Command_ResetWarnings, ADMFLAG_ROOT);
 	RegConsoleCmd("sm_warnings", Command_Warnings);
@@ -66,45 +67,54 @@ public void OnPluginStart()
 	AutoExecConfig(true, "plugin_simplewarnings");
 }
 
-public OnClientPutInServer(client) 
+public void OnClientPutInServer(int client) 
 {
 	if(warnings[client] > 0)
     CreateTimer(1.0, WarningsNotify, client);
 }
 
-public OnRoundStart(Handle:event, const String:name[], bool:dontBroadcast)
+public Action OnRoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	if(sm_warn_roundreset)
 	{
-	    for(new i = 1; i <= MaxClients; i++)
+	    for(int i = 1; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i))
 			{
 				roundwarnings[i] = 0;
 			}
 		}
+	}
+	
+	for(int i = 1; i<= MaxClients; i++)
+	{
+		b_IsPlural[i][WARNINGS] = true;
+		b_IsPlural[i][MIC_WARNINGS] = true;
 	}
 } 
 
-public OnMapStart()
+public void OnMapStart()
 {
 	if(!sm_warn_roundreset)
 	{
-		for(new i = 1; i <= MaxClients; i++)
+		for(int i = 1; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i))
 			{
 				roundwarnings[i] = 0;
-				b_IsPlural[i][WARNINGS] = true;
-				b_IsPlural[i][MIC_WARNINGS] = true;
 			}
 		}
 	}
+	for(int i = 1; i<= MaxClients; i++)
+	{
+		b_IsPlural[i][WARNINGS] = true;
+		b_IsPlural[i][MIC_WARNINGS] = true;
+	}
 }
 
-public Action:WarningsNotify(Handle:timer, any:client)
+public Action WarningsNotify(Handle timer, int client)
 {
-	for(new i = 1; i <= MaxClients; i++)
+	for(int i = 1; i <= MaxClients; i++)
 	{
 		if (IsClientInGame(i))
 		{
@@ -178,7 +188,7 @@ public Action Command_Warn(int client, int args)
 	
 	PrintToChat(target, "%s\x07*\x01 You currently have \x07%d \x01", b_IsPlural[target][WARNINGS] ? "warnings.":"warning.", TAG_MESSAGE, warnings[target]);
 	
-	for(new i = 1; i <= MaxClients; i++)
+	for(int i = 1; i <= MaxClients; i++)
 	{
 		if (IsClientInGame(i))
 		{
@@ -276,7 +286,7 @@ public Action Command_Warn_Mic(int client, int args)
 		PrintToChat(target, "%s\x07*\x01 You currently have \x07%d \x01", b_IsPlural[target][MIC_WARNINGS] ? "warnings":"warning", TAG_MESSAGE, warnings[target]);
 		
 		
-		for(new i = 1; i <= MaxClients; i++)
+		for(int i = 1; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i))
 			{
@@ -410,4 +420,11 @@ public Action Command_Warnings(int client, int args)
 	
 	
 	return Plugin_Handled;
+}
+
+/* Debugging feature */
+public Action Print_Bool(int client, int args)
+{
+	PrintToChatAll("Warnings bool: %s", b_IsPlural[client][WARNINGS]);
+	PrintToChatAll("Mic Warnings bool: %s", b_IsPlural[client][MIC_WARNINGS]);
 }
