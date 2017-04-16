@@ -6,7 +6,9 @@
 #include <sourcemod>
 #include <sdktools>
 #include <basecomm>
-#pragma semicolon 1 
+#pragma semicolon 1
+
+#define TAG_MESSAGE "[\x04Warnings\x01]"
  
 int warnings[MAXPLAYERS+1];
 int warnings_mic[MAXPLAYERS+1]; 
@@ -23,7 +25,7 @@ ConVar sm_warn_mictoban = null;
 public Plugin myinfo =
 {
 	name = 		"Simple Warnings",
-	author = 	"Potatoz",
+	author = 	"Potatoz, B3none",
 	description = 	"Allows Admins to warn players",
 	version = 	"1.1",
 	url = 		"https://forums.alliedmods.net/showthread.php?t=294358"
@@ -78,7 +80,7 @@ public Action:WarningsNotify(Handle:timer, any:client)
 			{
 				if(i != client) 
 				{
-					PrintToChat(i, " \x07* WARNING:\x01 Player\x07 %N\x01 has \x07%d \x01warning(s) and \x07%d \x01 mic warning(s) on record.", client, warnings[client], warnings_mic[client]);
+					PrintToChat(i, "%s\x07* WARNING:\x01 Player\x07 %N\x01 has \x07%d \x01warning(s) and \x07%d \x01 mic warning(s) on record.", TAG_MESSAGE, client, warnings[client], warnings_mic[client]);
 				}
 			}
 		}
@@ -105,23 +107,23 @@ public Action Command_Warn(int client, int args)
 	
 	if(target == client)
 	{
-		PrintToChat(client, " \x07*\x01 You can't warn yourself!");
+		PrintToChat(client, "%s\x07*\x01 You can't warn yourself!",  TAG_MESSAGE);
 		return Plugin_Handled;
 	}
 	
 	warnings[target]++;
 	roundwarnings[target]++;
-	PrintToChat(client, " \x07*\x01 You have warned \x07%N \x01for reason: %s", target, arg2);
-	PrintToChat(target, " \x07*\x01 You have been warned by \x07%N \x01for reason: %s", client, arg2);
+	PrintToChat(client, "%s\x07*\x01 You have warned \x07%N \x01for reason: %s", TAG_MESSAGE, target, arg2);
+	PrintToChat(target, "%s\x07*\x01 You have been warned by \x07%N \x01for reason: %s", TAG_MESSAGE, client, arg2);
 	
 	if(roundwarnings[target] >= 2)
 	{
-		PrintToChat(target, " \x07*\x01 You currently have \x07%d \x01warning(s).", warnings[target]);
+		PrintToChat(target, "%s\x07*\x01 You currently have \x07%d \x01warning(s).", TAG_MESSAGE, warnings[target]);
 	}
 	
 	else if(roundwarnings[target] == 1)
 	{
-		PrintToChat(target, " \x07*\x01 You currently have 1 warning.");
+		PrintToChat(target, "%s\x07*\x01 You currently have 1 warning.",  TAG_MESSAGE);
 	}
 	
 	for(new i = 1; i <= MaxClients; i++)
@@ -131,7 +133,7 @@ public Action Command_Warn(int client, int args)
 			if (CheckCommandAccess(i, "PRINT_ONLY_TO_ADMIN", ADMFLAG_GENERIC, true)) {
 				if(i != client)
 				{
-					PrintToChat(i, " \x07* %N\x01 has warned \x07%N \x01for reason: %s", client, target, arg2);
+					PrintToChat(i, "%s\x07* %N\x01 has warned \x07%N \x01for reason: %s", TAG_MESSAGE, client, target, arg2);
 				}
 			}
 		}
@@ -146,6 +148,7 @@ public Action Command_Warn(int client, int args)
 			if(GetConVarInt(sm_warn_maxwarnings_reset) == 1)
 			{
 				warnings[target] = 0;
+				warnings_mic[target] = 0;
 				roundwarnings[target] = 0;
 			}
 			BanClient(target, GetConVarInt(sm_warn_banduration), BANFLAG_AUTO, "S-WARN: Too many Warnings", "Too many warnings in one round.");
@@ -158,6 +161,7 @@ public Action Command_Warn(int client, int args)
 			if(GetConVarInt(sm_warn_maxwarnings_reset) == 1)
 			{
 				warnings[target] = 0;
+				warnings_mic[target] = 0;
 				roundwarnings[target] = 0;
 			}
 			BanClient(target, GetConVarInt(sm_warn_banduration), BANFLAG_AUTO, "S-WARN: Too many Warnings", "Too many total warnings.");
@@ -189,23 +193,23 @@ public Action Command_Warn_Mic(int client, int args)
 		
 		if(target == client)
 		{
-			PrintToChat(client, " \x07*\x01 You can't mic warn yourself!");
+			PrintToChat(client, "%s\x07*\x01 You can't mic warn yourself!", TAG_MESSAGE);
 			return Plugin_Handled;
 		}
 		
 		warnings_mic[target]++;
 		roundwarnings[target]++;
-		PrintToChat(client, " \x07*\x01 You have mic warned \x07%N \x01for reason: %s", target, arg2);
-		PrintToChat(target, " \x07*\x01 You have been mic warned by \x07%N \x01for reason: %s", client, arg2);
+		PrintToChat(client, "%s\x07*\x01 You have mic warned \x07%N \x01for reason: %s", TAG_MESSAGE, target, arg2);
+		PrintToChat(target, "%s\x07*\x01 You have been mic warned by \x07%N \x01for reason: %s", TAG_MESSAGE, client, arg2);
 		
 		if(roundwarnings[target] >= 2)
 		{
-			PrintToChat(target, " \x07*\x01 You currently have \x07%d \x01warnings.", warnings[target]);
+			PrintToChat(target, "%s\x07*\x01 You currently have \x07%d \x01warnings.", TAG_MESSAGE, warnings[target]);
 		}
 		
 		else if(roundwarnings[target] == 1)
 		{
-			PrintToChat(target, " \x07*\x01 You currently have 1 warning.");
+			PrintToChat(target, "%s\x07*\x01 You currently have 1 warning.", TAG_MESSAGE);
 		}
 		
 		for(new i = 1; i <= MaxClients; i++)
@@ -215,7 +219,7 @@ public Action Command_Warn_Mic(int client, int args)
 				if (CheckCommandAccess(i, "PRINT_ONLY_TO_ADMIN", ADMFLAG_GENERIC, true)) {
 					if(i != client)
 					{
-						PrintToChat(i, " \x07* %N\x01 has been mic warned \x07%N \x01for reason: %s", client, target, arg2);
+						PrintToChat(i, "%s\x07* %N\x01 has been mic warned \x07%N \x01for reason: %s", TAG_MESSAGE, client, target, arg2);
 					}
 				}
 			}
@@ -229,10 +233,11 @@ public Action Command_Warn_Mic(int client, int args)
 				if(GetConVarInt(sm_warn_maxwarnings_reset) == 1)
 				{
 					warnings[target] = 0;
+					warnings_mic[target] = 0;
 					roundwarnings[target] = 0;
 				}
 				BaseComm_SetClientMute(client, true);
-				PrintToChat(client, "You were Mic Warned too many times, muted!");
+				PrintToChat(client, "%s You were Mic Warned too many times, muted!", TAG_MESSAGE);
 				
 				if(GetConVarBool(sm_warn_mictoban))
 				{
@@ -245,10 +250,11 @@ public Action Command_Warn_Mic(int client, int args)
 				if(GetConVarInt(sm_warn_maxwarnings_reset) == 1)
 				{
 					warnings[target] = 0;
+					warnings_mic[target] = 0;
 					roundwarnings[target] = 0;
 				}
 				BaseComm_SetClientMute(client, true);
-				PrintToChat(client, "You were Mic Warned too many times, muted!");
+				PrintToChat(client, "%sYou were Mic Warned too many times, muted!", TAG_MESSAGE);
 				
 				if(GetConVarBool(sm_warn_mictoban))
 				{
@@ -261,7 +267,7 @@ public Action Command_Warn_Mic(int client, int args)
 	
 	else
 	{
-		PrintToChat(client, "Mic warnings are currently disabled.");
+		PrintToChat(client, "%s Mic warnings are currently disabled.", TAG_MESSAGE);
 		return Plugin_Handled;
 	}
 }
@@ -283,8 +289,8 @@ public Action Command_ResetWarnings(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	PrintToChat(client, " \x07*\x01 You have reset \x07%N \x01warning(s).", target);
-	PrintToChat(target, " \x07* %N \x01 has reset your warning(s)", client);
+	PrintToChat(client, "%s\x07*\x01 You have reset \x07%N \x01warning(s).", TAG_MESSAGE, target);
+	PrintToChat(target, "%s\x07* %N \x01 has reset your warning(s)", TAG_MESSAGE, client);
 	warnings[target] = 0;
 	warnings_mic[target] = 0;
 	roundwarnings[target] = 0;
@@ -309,7 +315,7 @@ public Action Command_Warnings(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	PrintToChat(client, " \x07* %N\x01 has \x07%d \x01warning(s) and \x07%d \x01 mic warning(s) on record.", target, warnings[target], warnings_mic[target]);
+	PrintToChat(client, "%s\x07* %N\x01 has \x07%d \x01warning(s) and \x07%d \x01 mic warning(s) on record.", TAG_MESSAGE, target, warnings[target], warnings_mic[target]);
 	
 	return Plugin_Handled;
 }
