@@ -337,8 +337,18 @@ public Action Command_ResetWarnings(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	PrintToChat(client, "%s\x07*\x01 You have reset all of \x07%N \x01warning(s).", TAG_MESSAGE, target);
-	PrintToChat(target, "%s\x07* %N \x01 has reset all of your warning(s)", TAG_MESSAGE, client);
+	if(warnings[target] == 1)
+	{
+		b_IsPlural[target][WARNINGS] = false;
+	}
+	
+	if(warnings_mic[target] == 1)
+	{
+		b_IsPlural[target][MIC_WARNINGS] = false;
+	}
+	
+	PrintToChat(client, "%s\x07*\x01 You have reset all of \x07%N \x01", b_IsPlural[target][WARNINGS] ? "warnings.":"warning.", TAG_MESSAGE, target);
+	PrintToChat(target, "%s\x07* %N \x01 has reset all of your ", b_IsPlural[target][WARNINGS] ? "warnings.":"warning.", TAG_MESSAGE, client);
 	warnings[target] = 0;
 	warnings_mic[target] = 0;
 	roundwarnings[target] = 0;
