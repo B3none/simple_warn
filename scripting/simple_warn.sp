@@ -52,8 +52,8 @@ public void OnPluginStart()
 	sm_warn_maxroundwarnings = 	CreateConVar("sm_warn_maxroundwarnings", "3", "Max amount of warnings in a single round before banning a player (if enabled), Default = 3");
 	sm_warn_mic = 			CreateConVar("sm_warn_mic", "0", "Enable mic warnings? 1 = Enabled 0 = Disabled, Default = 0");
 	sm_warn_mictoban = 		CreateConVar("sm_warn_mictoban", "0", "Will a mic warning lead to a ban? 1 = Yes | 0 = No, Default = 0");
-	sm_warn_microundtotal = 		CreateConVar("sm_warn_microundtotal", "0", "Will a mic warning add to a players round warnings? 1 = Yes | 0 = No, Default = 0");
-	sm_warn_announce = CreateConVar("sm_warn_announce", "1", "Enable announcments? 1 = Enabled 0 = Disabled, Default = 1");
+	sm_warn_microundtotal = 	CreateConVar("sm_warn_microundtotal", "0", "Will a mic warning add to a players round warnings? 1 = Yes | 0 = No, Default = 0");
+	sm_warn_announce = 		CreateConVar("sm_warn_announce", "1", "Enable pre-game announcments to admins? 1 = Enabled 0 = Disabled, Default = 1");
 	
 	AutoExecConfig(true, "plugin_simplewarnings");
 }
