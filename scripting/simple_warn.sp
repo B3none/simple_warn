@@ -112,7 +112,17 @@ public Action:WarningsNotify(Handle:timer, any:client)
 				{
 					if(sm_warn_announce)
 					{
-						PrintToChat(i, "%s\x07* WARNING:\x01 Player\x07 %N\x01 has \x07%d \x01warning(s) and \x07%d \x01 mic warning(s) on record.", TAG_MESSAGE, client, warnings[client], warnings_mic[client]);
+						if(warnings[client] == 1)
+						{
+							b_IsPlural[client][WARNINGS] = false;
+						}
+						
+						if(warnings_mic[client] == 1)
+						{
+							b_IsPlural[client][MIC_WARNINGS] = false;
+						}
+						
+						PrintToChat(i, "%s\x07* WARNING:\x01 Player\x07 %N\x01 has \x07%d \x01", b_IsPlural[client][WARNINGS] ? "warnings":"warning", "and \x07%d \x01 mic ", b_IsPlural[client][MIC_WARNINGS] ? "warnings":"warning", "on record.", TAG_MESSAGE, client, warnings[client], warnings_mic[client]);
 					}
 				}
 			}
