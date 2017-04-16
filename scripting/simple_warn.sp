@@ -309,7 +309,7 @@ public Action Command_Warnings(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	PrintToChat(client, " \x07* %N\x01 has \x07%d \x01warning(s) on record.", target, warnings[target]);
+	PrintToChat(client, " \x07* %N\x01 has \x07%d \x01warning(s) and \x07%d \x01 mic warning(s) on record.", target, warnings[target], warnings_mic[target]);
 	
 	return Plugin_Handled;
 }
