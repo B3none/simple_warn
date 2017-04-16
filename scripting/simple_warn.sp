@@ -22,13 +22,14 @@ ConVar sm_warn_maxroundwarnings = null;
 ConVar sm_warn_mic = null;
 ConVar sm_warn_mictoban = null;
 ConVar sm_warn_microundtotal = null;
- 
+ConVar sm_warn_announce = null;
+
 public Plugin myinfo =
 {
 	name = 		"Simple Warnings",
 	author = 	"Potatoz, B3none",
 	description = 	"Allows Admins to warn players",
-	version = 	"1.1",
+	version = 	"1.2",
 	url = 		"https://forums.alliedmods.net/showthread.php?t=294358"
 };
 
@@ -52,6 +53,8 @@ public void OnPluginStart()
 	sm_warn_mic = 			CreateConVar("sm_warn_mic", "0", "Enable mic warnings? 1 = Enabled 0 = Disabled, Default = 0");
 	sm_warn_mictoban = 		CreateConVar("sm_warn_mictoban", "0", "Will a mic warning lead to a ban? 1 = Yes | 0 = No, Default = 0");
 	sm_warn_microundtotal = 		CreateConVar("sm_warn_microundtotal", "0", "Will a mic warning add to a players round warnings? 1 = Yes | 0 = No, Default = 0");
+	sm_warn_announce = CreateConVar("sm_warn_announce", "1", "Enable announcments? 1 = Enabled 0 = Disabled, Default = 1");
+	
 	AutoExecConfig(true, "plugin_simplewarnings");
 }
 
@@ -82,7 +85,10 @@ public Action:WarningsNotify(Handle:timer, any:client)
 			{
 				if(i != client) 
 				{
-					PrintToChat(i, "%s\x07* WARNING:\x01 Player\x07 %N\x01 has \x07%d \x01warning(s) and \x07%d \x01 mic warning(s) on record.", TAG_MESSAGE, client, warnings[client], warnings_mic[client]);
+					if(sm_warn_announce)
+					{
+						PrintToChat(i, "%s\x07* WARNING:\x01 Player\x07 %N\x01 has \x07%d \x01warning(s) and \x07%d \x01 mic warning(s) on record.", TAG_MESSAGE, client, warnings[client], warnings_mic[client]);
+					}
 				}
 			}
 		}
