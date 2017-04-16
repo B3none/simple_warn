@@ -23,6 +23,7 @@ ConVar sm_warn_mic = null;
 ConVar sm_warn_mictoban = null;
 ConVar sm_warn_microundtotal = null;
 ConVar sm_warn_announce = null;
+ConVar sm_warn_roundreset = null;
 
 public Plugin myinfo =
 {
@@ -54,6 +55,7 @@ public void OnPluginStart()
 	sm_warn_mictoban = 		CreateConVar("sm_warn_mictoban", "0", "Will a mic warning lead to a ban? 1 = Yes | 0 = No, Default = 0");
 	sm_warn_microundtotal = 	CreateConVar("sm_warn_microundtotal", "0", "Will a mic warning add to a players round warnings? 1 = Yes | 0 = No, Default = 0");
 	sm_warn_announce = 		CreateConVar("sm_warn_announce", "1", "Enable pre-game announcments to admins? 1 = Enabled 0 = Disabled, Default = 1");
+	sm_warn_announce = 		CreateConVar("sm_warn_roundreset", "0", "Reset warnings on each round? 1 = Enabled 0 = Map Start, Default = 0");
 	
 	AutoExecConfig(true, "plugin_simplewarnings");
 }
@@ -64,16 +66,33 @@ public OnClientPutInServer(client)
     CreateTimer(1.0, WarningsNotify, client);
 }
 
-public OnRoundStart(Handle:event, const String:name[], bool:dontBroadcast) 
-{ 
-    for(new i = 1; i <= MaxClients; i++)
+public OnRoundStart(Handle:event, const String:name[], bool:dontBroadcast)
+{
+	if(sm_warn_roundreset)
 	{
-		if (IsClientInGame(i))
+	    for(new i = 1; i <= MaxClients; i++)
 		{
-			roundwarnings[i] = 0;
+			if (IsClientInGame(i))
+			{
+				roundwarnings[i] = 0;
+			}
 		}
 	}
-}  
+} 
+
+public OnMapStart()
+{
+	if(!sm_warn_roundreset)
+	{
+		for(new i = 1; i <= MaxClients; i++)
+		{
+			if (IsClientInGame(i))
+			{
+				roundwarnings[i] = 0;
+			}
+		}
+	}
+}
 
 public Action:WarningsNotify(Handle:timer, any:client)
 {
