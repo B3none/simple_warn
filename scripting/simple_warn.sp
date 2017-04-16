@@ -55,7 +55,7 @@ public void OnPluginStart()
 	sm_warn_mictoban = 		CreateConVar("sm_warn_mictoban", "0", "Will a mic warning lead to a ban? 1 = Yes | 0 = No, Default = 0");
 	sm_warn_microundtotal = 	CreateConVar("sm_warn_microundtotal", "0", "Will a mic warning add to a players round warnings? 1 = Yes | 0 = No, Default = 0");
 	sm_warn_announce = 		CreateConVar("sm_warn_announce", "1", "Enable pre-game announcments to admins? 1 = Enabled 0 = Disabled, Default = 1");
-	sm_warn_announce = 		CreateConVar("sm_warn_roundreset", "0", "Reset warnings on each round? 1 = Enabled 0 = Map Start, Default = 0");
+	sm_warn_roundreset = 		CreateConVar("sm_warn_roundreset", "0", "Reset warnings on each round? 1 = Enabled 0 = Map Start, Default = 0");
 	
 	AutoExecConfig(true, "plugin_simplewarnings");
 }
