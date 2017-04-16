@@ -45,6 +45,8 @@ public void OnPluginStart()
 	RegAdminCmd("sm_warn", Command_Warn, ADMFLAG_BAN);
 	RegAdminCmd("sm_warnmic", Command_Warn_Mic, ADMFLAG_BAN);
 	
+	// RegConsoleCmd("sm_boolvalue", Print_Bool);
+	
 	RegAdminCmd("sm_resetwarnings", Command_ResetWarnings, ADMFLAG_ROOT);
 	RegConsoleCmd("sm_warnings", Command_Warnings);
 	
@@ -115,11 +117,13 @@ public Action:WarningsNotify(Handle:timer, any:client)
 						if(warnings[client] == 1)
 						{
 							b_IsPlural[client][WARNINGS] = false;
+							return Plugin_Continue;
 						}
 						
 						if(warnings_mic[client] == 1)
 						{
 							b_IsPlural[client][MIC_WARNINGS] = false;
+							return Plugin_Continue;
 						}
 						
 						PrintToChat(i, "%s\x07* WARNING:\x01 Player\x07 %N\x01 has \x07%d \x01", b_IsPlural[client][WARNINGS] ? "warnings":"warning", "and \x07%d \x01 mic ", b_IsPlural[client][MIC_WARNINGS] ? "warnings":"warning", "on record.", TAG_MESSAGE, client, warnings[client], warnings_mic[client]);
@@ -128,6 +132,7 @@ public Action:WarningsNotify(Handle:timer, any:client)
 			}
 		}
 	}
+	return Plugin_Handled;
 }
 
 public Action Command_Warn(int client, int args)
@@ -162,11 +167,13 @@ public Action Command_Warn(int client, int args)
 	if(warnings[target] == 1)
 	{
 		b_IsPlural[target][WARNINGS] = false;
+		return Plugin_Continue;
 	}
 	
 	if(warnings_mic[target] == 1)
 	{
 		b_IsPlural[target][MIC_WARNINGS] = false;
+		return Plugin_Continue;
 	}
 	
 	PrintToChat(target, "%s\x07*\x01 You currently have \x07%d \x01", b_IsPlural[target][WARNINGS] ? "warnings.":"warning.", TAG_MESSAGE, warnings[target]);
@@ -257,11 +264,13 @@ public Action Command_Warn_Mic(int client, int args)
 		if(warnings[target] == 1)
 		{
 			b_IsPlural[target][WARNINGS] = false;
+			return Plugin_Continue;
 		}
 		
 		if(warnings_mic[target] == 1)
 		{
 			b_IsPlural[target][MIC_WARNINGS] = false;
+			return Plugin_Continue;
 		}
 		
 		PrintToChat(target, "%s\x07*\x01 You currently have \x07%d \x01", b_IsPlural[target][MIC_WARNINGS] ? "warnings":"warning", TAG_MESSAGE, warnings[target]);
@@ -350,11 +359,13 @@ public Action Command_ResetWarnings(int client, int args)
 	if(warnings[target] == 1)
 	{
 		b_IsPlural[target][WARNINGS] = false;
+		return Plugin_Continue;
 	}
 	
 	if(warnings_mic[target] == 1)
 	{
 		b_IsPlural[target][MIC_WARNINGS] = false;
+		return Plugin_Continue;
 	}
 	
 	PrintToChat(client, "%s\x07*\x01 You have reset all of \x07%N \x01", b_IsPlural[target][WARNINGS] ? "warnings.":"warning.", TAG_MESSAGE, target);
@@ -386,11 +397,13 @@ public Action Command_Warnings(int client, int args)
 	if(warnings[target] == 1)
 	{
 		b_IsPlural[target][WARNINGS] = false;
+		return Plugin_Continue;
 	}
 	
 	if(warnings_mic[target] == 1)
 	{
 		b_IsPlural[target][MIC_WARNINGS] = false;
+		return Plugin_Continue;
 	}
 	
 	PrintToChat(client, "%s\x07* %N\x01 has \x07%d \x01", b_IsPlural[target][WARNINGS] ? "warnings":"warning", " and \x07%d \x01mic", b_IsPlural[target][MIC_WARNINGS] ? "warnings":"warning", " on record.", TAG_MESSAGE, target, warnings[target], warnings_mic[target]);
