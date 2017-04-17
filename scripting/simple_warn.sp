@@ -513,7 +513,7 @@ public Action Command_Warnings(int client, int args)
 		s_IsPlural_MW[client] = "warning";
 	}
 	
-	PrintToChat(client, "%s %N\x01 has \x07%d \x01 %s and \x07%d \x01mic %s on record.", TAG_MESSAGE, target, warnings[target], s_IsPlural_W[target], warnings_mic[target], s_IsPlural_MW[target]);
+	PrintToChat(client, "%s %N\x01 has \x07%d \x01%s and \x07%d \x01mic %s on record.", TAG_MESSAGE, target, warnings[target], s_IsPlural_W[target], warnings_mic[target], s_IsPlural_MW[target]);
 	
 	return Plugin_Handled;
 }
