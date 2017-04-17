@@ -77,7 +77,7 @@ public Action OnRoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	if(sm_warn_roundreset)
 	{
-	    for(int i = 0; i <= MaxClients; i++)
+	    for(int i = 1; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i))
 			{
@@ -97,7 +97,7 @@ public void OnMapStart()
 {
 	if(!sm_warn_roundreset)
 	{
-		for(int i = 0; i <= MaxClients; i++)
+		for(int i = 1; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i))
 			{
@@ -226,7 +226,7 @@ public Action Command_Warn(int client, int args)
 	
 	PrintToChat(target, "%s You currently have \x07%d \x01%s.", TAG_MESSAGE, warnings[target], s_IsPlural_W[target]);
 	
-	for(int i = 0; i <= MaxClients; i++)
+	for(int i = 1; i <= MaxClients; i++)
 	{
 		if (IsClientInGame(i))
 		{
@@ -234,6 +234,7 @@ public Action Command_Warn(int client, int args)
 			{
 				if(i != client)
 				{
+					PrintToChat(i, "%s %N\x01 now has \x07%d \x01%s and \x07%d \x01mic %s on record.", TAG_MESSAGE, target, warnings[target], s_IsPlural_W[target], warnings_mic[target], s_IsPlural_MW[target]);
 					PrintToChat(i, "%s \x07%N \x01has warned \x07%N \x01for reason: %s", TAG_MESSAGE, client, target, arg2);
 				}
 			}
@@ -340,11 +341,10 @@ public Action Command_Warn_Mic(int client, int args)
 			s_IsPlural_MW[target] = "warning";
 		}
 	
-		
 		PrintToChat(target, "%s You currently have \x07%d \x01mic %s.", TAG_MESSAGE, warnings_mic[target], s_IsPlural_MW[target]);
 		
 		
-		for(int i = 0; i <= MaxClients; i++)
+		for(int i = 1; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i))
 			{
@@ -352,6 +352,7 @@ public Action Command_Warn_Mic(int client, int args)
 				{
 					if(i != client)
 					{
+						PrintToChat(i, "%s %N\x01 now has \x07%d \x01%s and \x07%d \x01mic %s on record.", TAG_MESSAGE, target, warnings[target], s_IsPlural_W[target], warnings_mic[target], s_IsPlural_MW[target]);
 						PrintToChat(i, "%s %N\x01 has been mic warned \x07%N \x01for reason: %s", TAG_MESSAGE, client, target, arg2);
 					}
 				}
