@@ -1,6 +1,7 @@
 /*
 * Original plugin by "Potatoz" -> https://forums.alliedmods.net/member.php?u=275895
 * Edits by B3none -> http://steamcommunity.com/profiles/76561198028510846
+* THIS IS THE VERSION WITHOUT SQL SUPPORT
 */
 
 #include <sourcemod>
