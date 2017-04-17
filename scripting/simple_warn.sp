@@ -77,7 +77,7 @@ public Action OnRoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	if(sm_warn_roundreset)
 	{
-	    for(int i = 1; i <= MaxClients; i++)
+	    for(int i = 0; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i))
 			{
@@ -86,7 +86,7 @@ public Action OnRoundStart(Handle event, const char[] name, bool dontBroadcast)
 		}
 	}
 	
-	for(int i = 1; i<= MaxClients; i++)
+	for(int i = 0; i<= MaxClients; i++)
 	{
 		b_IsPlural[i][WARNINGS] = true;
 		b_IsPlural[i][MIC_WARNINGS] = true;
@@ -97,7 +97,7 @@ public void OnMapStart()
 {
 	if(!sm_warn_roundreset)
 	{
-		for(int i = 1; i <= MaxClients; i++)
+		for(int i = 0; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i))
 			{
@@ -105,7 +105,7 @@ public void OnMapStart()
 			}
 		}
 	}
-	for(int i = 1; i<= MaxClients; i++)
+	for(int i = 0; i<= MaxClients; i++)
 	{
 		b_IsPlural[i][WARNINGS] = true;
 		b_IsPlural[i][MIC_WARNINGS] = true;
@@ -114,7 +114,7 @@ public void OnMapStart()
 
 public Action WarningsNotify(Handle timer, int client)
 {
-	for(int i = 1; i <= MaxClients; i++)
+	for(int i = 0; i <= MaxClients; i++)
 	{
 		if (IsClientInGame(i))
 		{
@@ -188,7 +188,7 @@ public Action Command_Warn(int client, int args)
 	
 	PrintToChat(target, "%s\x07*\x01 You currently have \x07%d \x01", b_IsPlural[target][WARNINGS] ? "warnings.":"warning.", TAG_MESSAGE, warnings[target]);
 	
-	for(int i = 1; i <= MaxClients; i++)
+	for(int i = 0; i <= MaxClients; i++)
 	{
 		if (IsClientInGame(i))
 		{
@@ -286,7 +286,7 @@ public Action Command_Warn_Mic(int client, int args)
 		PrintToChat(target, "%s\x07*\x01 You currently have \x07%d \x01", b_IsPlural[target][MIC_WARNINGS] ? "warnings":"warning", TAG_MESSAGE, warnings[target]);
 		
 		
-		for(int i = 1; i <= MaxClients; i++)
+		for(int i = 0; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i))
 			{
@@ -422,7 +422,6 @@ public Action Command_Warnings(int client, int args)
 	return Plugin_Handled;
 }
 
-/* Debugging feature */
 public Action Print_Bool(int client, int args)
 {
 	PrintToChatAll("Warnings bool: %s", b_IsPlural[client][WARNINGS]);
