@@ -1,7 +1,6 @@
 /*
 * Original plugin by "Potatoz" -> https://forums.alliedmods.net/member.php?u=275895
 * Edits by B3none -> http://steamcommunity.com/profiles/76561198028510846
-* THIS IS THE VERSION WITH SQL SUPPORT
 */
 
 #include <sourcemod>
@@ -18,6 +17,7 @@ int roundwarnings[MAXPLAYERS+1];
 bool b_IsPlural[MAXPLAYERS+1][2];
 char s_IsPlural_W[MAXPLAYERS+1][16];
 char s_IsPlural_MW[MAXPLAYERS+1][16];
+char error_query[128];
 
 Handle DB = INVALID_HANDLE;
 
@@ -69,13 +69,12 @@ public void OnPluginStart()
 	
 	AutoExecConfig(true, "plugin_simplewarnings");
 	
-	
-	char error[128]; // Buffer string for error
+	char error[128];
 	DB = SQL_Connect("warnings", true, error, sizeof(error)); // Connect to database
 	
 	if(DB == INVALID_HANDLE)
 	{
-		PrintToServer("Warning system MySQL error: %s", error); // If unsuccessful log error
+		PrintToServer("Warning system MySQL connection error: %s", error); // If unsuccessful log error
 	}
 	else
 	{
@@ -285,6 +284,30 @@ public Action Command_Warn(int client, int args)
 			BanClient(target, GetConVarInt(sm_warn_banduration), BANFLAG_AUTO, "S-WARN: Too many Warnings", "Too many total warnings.");
 		}
 	} 
+	
+	/* SQL QUERY SECTION */
+	char query[512];
+	char admin_name[64];
+	char target_name[64];
+	char date[64];
+	
+	Format(date, sizeof(date), "%d/%m/%Y, %H:%M", GetTime());
+	
+	Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, reason, admin) VALUES ('', 'Default', '%s', '%s', '%s', '%s', '%s',)", FindConVar("hostname"), date, GetClientName(target, target_name, sizeof(target_name)), arg2, GetClientName(client, admin_name, sizeof(admin_name)));
+	
+	Handle query_handle = SQL_Query(DB, query);
+	
+	if(query_handle != INVALID_HANDLE)
+	{
+		ReplyToCommand(client, "%s SQL Query successfully sent.", TAG_MESSAGE);
+		LogToFile("logs/plugin_simplewarnings.log", "Admin %s warned %s for %s", admin_name, target_name, arg2);
+	}
+	
+	else
+	{
+		LogToFile("logs/plugin_simplewarnings_sqlerrors.log", "MySQL Error: %s", SQL_GetError(DB, error_query, sizeof(error_query)));
+		ReplyToCommand(client, "%s Eek! Query failed, contact server owner!", TAG_MESSAGE);
+	}
 	
 	return Plugin_Handled;
 }
