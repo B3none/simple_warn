@@ -46,8 +46,6 @@ public void OnPluginStart()
 	RegAdminCmd("sm_warn", Command_Warn, ADMFLAG_BAN);
 	RegAdminCmd("sm_warnmic", Command_Warn_Mic, ADMFLAG_BAN);
 	
-	RegConsoleCmd("sm_boolvalue", Print_Bool);
-	
 	RegAdminCmd("sm_resetwarnings", Command_ResetWarnings, ADMFLAG_ROOT);
 	RegConsoleCmd("sm_warnings", Command_Warnings);
 	
@@ -422,8 +420,7 @@ public Action Command_Warnings(int client, int args)
 	return Plugin_Handled;
 }
 
-public Action Print_Bool(int client, int args)
-{
-	PrintToChatAll("Warnings bool: %s", b_IsPlural[client][WARNINGS]);
-	PrintToChatAll("Mic Warnings bool: %s", b_IsPlural[client][MIC_WARNINGS]);
-}
+/* Use %b to return a numeric value for the boolean
+* 1 == true
+* 0 == false
+*/
