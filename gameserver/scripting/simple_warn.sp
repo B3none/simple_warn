@@ -438,6 +438,30 @@ public Action Command_Warn_Mic(int client, int args)
 				}
 			}
 		}
+		
+		/* SQL QUERY SECTION */
+		char query[512];
+		char admin_name[64];
+		char target_name[64];
+		char date[64];
+		
+		Format(date, sizeof(date), "%d/%m/%Y, %H:%M", GetTime());
+		
+		Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, reason, admin) VALUES ('', 'Mic', '%s', '%s', '%s', '%s', '%s',)", FindConVar("hostname"), date, GetClientName(target, target_name, sizeof(target_name)), arg2, GetClientName(client, admin_name, sizeof(admin_name)));
+		
+		Handle query_handle = SQL_Query(DB, query);
+		
+		if(query_handle != INVALID_HANDLE)
+		{
+			ReplyToCommand(client, "%s SQL Query successfully sent.", TAG_MESSAGE);
+			LogToFile("logs/plugin_simplewarnings.log", "Admin %s warned %s for %s", admin_name, target_name, arg2);
+		}
+		
+		else
+		{
+			LogToFile("logs/plugin_simplewarnings_sqlerrors.log", "MySQL Error: %s", SQL_GetError(DB, error_query, sizeof(error_query)));
+			ReplyToCommand(client, "%s Eek! Query failed, contact server owner!", TAG_MESSAGE);
+		}
 		return Plugin_Handled;
 	}	
 	
