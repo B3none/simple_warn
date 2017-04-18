@@ -491,22 +491,27 @@ public Action Command_ResetWarnings(int client, int args)
 		b_IsPlural[target][WARNINGS] = true;
 	}
 	
-	if(b_IsPlural[target][WARNINGS])
+	if(b_IsPlural[target][WARNINGS] == true)
 	{
 		s_IsPlural_W[target] = "warnings";
 	} else {
 		s_IsPlural_W[target] = "warning";
 	}
 		
-	if(b_IsPlural[target][MIC_WARNINGS])
+	if(b_IsPlural[target][MIC_WARNINGS] == true)
 	{
 		s_IsPlural_MW[target] = "warnings";
 	} else {
 		s_IsPlural_MW[target] = "warning";
 	}
 	
-	PrintToChat(client, "%s You have reset all of \x07%N \x01%s.", TAG_MESSAGE, target, s_IsPlural_W[target]);
-	PrintToChat(target, "%s \x07%N \x01has reset all of your %s.", TAG_MESSAGE, client, s_IsPlural_W[target]);
+	if(warnings[target] == 0)
+	{
+		PrintToChat(client, "%s \x07%N \x01has no warnings to reset.", TAG_MESSAGE, target, s_IsPlural_W[target]);
+	} else {
+		PrintToChat(client, "%s You have reset all of \x07%N \x01%s.", TAG_MESSAGE, target, s_IsPlural_W[target]);
+		PrintToChat(target, "%s \x07%N \x01has reset all of your %s.", TAG_MESSAGE, client, s_IsPlural_W[target]);
+	}
 	warnings[target] = 0;
 	warnings_mic[target] = 0;
 	roundwarnings[target] = 0;
