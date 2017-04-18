@@ -32,6 +32,13 @@ if($connect === true)
 		<p>Simply delete the "install" directory to progress (<b><u>This is for security reasons!</b></u>)</p>
 		';
 	}
+	
+	else
+	{
+		echo'<h1>FAILURE</h1>
+		<br>
+		<p>The SQL query has failed.</p>';
+	}
 }
 else
 {
