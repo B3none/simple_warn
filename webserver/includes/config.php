@@ -1,7 +1,7 @@
 <?php
 
-$db_host = ""; // The IP address of your MySQL database.
-$db_user = ""; // The user of the database.
+$db_host = "localhost"; // The IP address of your MySQL database.
+$db_user = "root"; // The user of the database.
 $db_password = ""; // The password of the user.
 $db = "warnings"; // The name of the database (Default = warnings).
 $db_table = "warnings"; // The table of the database.
