@@ -1,29 +1,23 @@
 <?php
-include('includes/config.php');
+include('../includes/config.php');
 
 if($connect === true)
 {
-	$creation_query = '
-	SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-	SET time_zone = "+00:00";
-
-	CREATE TABLE `warnings` (
-	  `warningid` int(11) NOT NULL,
-	  `warningtype` text NOT NULL,
-	  `server` text NOT NULL,
-	  `date` text NOT NULL,
-	  `client` text NOT NULL,
-	  `client_steamid` text NOT NULL,
-	  `reason` text NOT NULL,
-	  `admin` text NOT NULL,
-	  `admin_steamid` text NOT NULL
-	) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-	ALTER TABLE `warnings` ADD PRIMARY KEY (`warningid`);
-	  
-	ALTER TABLE `warnings` MODIFY `warningid` int(11) NOT NULL AUTO_INCREMENT;';
+	$creation_query = 'CREATE TABLE IF NOT EXISTS `'.$db_name.'`.`'.$db_table.'`
+	( 
+		`warningid` INT NOT NULL AUTO_INCREMENT ,
+		`warningtype` TEXT NOT NULL ,
+		`server` TEXT NOT NULL ,
+		`date` DATE NOT NULL ,
+		`client` TEXT NOT NULL ,
+		`client_steamid` TEXT NOT NULL ,
+		`reason` TEXT NOT NULL ,
+		`admin` TEXT NOT NULL ,
+		`admin_steamid` TEXT NOT NULL ,
+		PRIMARY KEY (`warningid`)
+	);';
 	
-	if(mysql_query($creation_query) == true)
+	if(mysql_query($creation_query) === true)
 	{
 		echo'<h1>Sweet!</h1>
 		<br>
