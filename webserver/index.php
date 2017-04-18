@@ -11,6 +11,7 @@
         }
         </style>
     </head>
+	
     <body>
 	<?php
 	/*
@@ -18,20 +19,21 @@
 	*/
 
 	include('includes/config.php');
+	
 	echo"<title>$page_title</title>";
 
-	$order_query = "SELECT * FROM `$db_table` ORDER BY `date`";
+	$order_query = "SELECT * FROM `$db_table` ORDER BY `date` DESC";
 	$connect_and_order = mysql_query($order_query, $connect);
 
 	echo "
 	<table id='warnings'>
-	    <tr>
-		<th>Warning ID</th>
-		<th>Warning Type</th>
-		<th>Server</th>
-		<th>Client</th>
-		<th>Admin</th>
-		<th>Date</th>
+		<tr>
+			<th>Warning ID</th>
+			<th>Warning Type</th>
+			<th>Server</th>
+			<th>Client</th>
+			<th>Admin</th>
+			<th>Date</th>
 	    </tr>
 	</td>";
 
@@ -39,23 +41,30 @@
 	while($row = mysql_fetch_array($connect_and_order))
 	{
 	    $id++;
-		echo"
-		<tr>
+		
+		$warningtype = $row['warningtype'];
+		$server = $row['server'];
+		$client = $row['client'];
+		$admin = $row['admin'];
+		$date = $row['date'];
+		
+		echo"<tr>
 			<td>$id</td>
-			<td>$row['warningtype']</td>
-			<td>$row['server']</td>
-			<td>$row['client']</td>
-			<td>$row['admin']</td>
-			<td>$row['date']</td>
+			<td>$warningtype</td>
+			<td>$server</td>
+			<td>$client</td>
+			<td>$admin</td>
+			<td>$date</td>
 		</tr>
 		";
 	}
 	echo"</table>";
 
-	mysql_close($connect_and_order);
+	mysql_close($connect);
 	?>
-    </body>
+    </body
+	
     <footer>
-	<p>Coded by B3none.</p>
+		<p>Coded by B3none.</p>
     </footer>
 </html>
