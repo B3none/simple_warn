@@ -1,24 +1,24 @@
 <html>
     <head>
         <style>
-        table, th, td 
+		table, th, td 
 		{
-            border: 2px solid black;
-            border-collapse: collapse;
-        }
-		
-        th, td 
-		{
-            padding: 5px;
-            text-align: left;    
-        }
-		
+		    border: 2px solid black;
+		    border-collapse: collapse;
+		}
+
+		th, td 
+			{
+		    padding: 5px;
+		    text-align: left;    
+		}
+
 		th
 		{
 			background-color: #4CAF50;
 			color: white;
 		}
-		
+
 		tr:nth-child(even)
 		{
 			background-color: #D3D3D3;
@@ -47,6 +47,7 @@
 	{
 		$order_query = "SELECT * FROM `$db_table` ORDER BY `date` DESC";
 		$connect_and_order = mysql_query($order_query, $connect);
+		$total_pages = (mysql_num_rows($connect_and_order)) / 20;
 
 		echo "
 		<table id='warnings' align='center'>
@@ -91,7 +92,11 @@
 			";
 		}
 		echo"</table>";
-
+		
+		for($i = 1; $i <= $total_pages; $i++)
+		{
+			echo "<a align='center' href='/index.php?page=$i'>$i</a>";
+		}
 		mysql_close($connect);
 	}
 	?>
