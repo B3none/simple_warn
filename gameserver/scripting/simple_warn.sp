@@ -288,12 +288,14 @@ public Action Command_Warn(int client, int args)
 	/* SQL QUERY SECTION */
 	char query[512];
 	char admin_name[64];
+	char admin_sid[64];
 	char target_name[64];
+	char target_sid[64];
 	char date[64];
 	
 	Format(date, sizeof(date), "%d/%m/%Y, %H:%M", GetTime());
 	
-	Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, reason, admin) VALUES ('', 'Default', '%s', '%s', '%s', '%s', '%s',)", FindConVar("hostname"), date, GetClientName(target, target_name, sizeof(target_name)), arg2, GetClientName(client, admin_name, sizeof(admin_name)));
+	Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_sid, reason, admin, admin_sid) VALUES ('', 'Default', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", FindConVar("hostname"), date, GetClientName(target, target_name, sizeof(target_name)), GetClientAuthId(target, AuthId_Steam2, target_sid, sizeof(target_sid)), arg2, GetClientName(client, admin_name, sizeof(admin_name)), GetClientAuthId(client, AuthId_Steam2, admin_sid, sizeof(admin_sid)));
 	
 	Handle query_handle = SQL_Query(DB, query);
 	
@@ -442,12 +444,14 @@ public Action Command_Warn_Mic(int client, int args)
 		/* SQL QUERY SECTION */
 		char query[512];
 		char admin_name[64];
+		char admin_sid[64];
 		char target_name[64];
+		char target_sid[64];
 		char date[64];
 		
 		Format(date, sizeof(date), "%d/%m/%Y, %H:%M", GetTime());
 		
-		Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, reason, admin) VALUES ('', 'Mic', '%s', '%s', '%s', '%s', '%s',)", FindConVar("hostname"), date, GetClientName(target, target_name, sizeof(target_name)), arg2, GetClientName(client, admin_name, sizeof(admin_name)));
+		Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_sid, reason, admin, admin_sid) VALUES ('', 'Default', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", FindConVar("hostname"), date, GetClientName(target, target_name, sizeof(target_name)), GetClientAuthId(target, AuthId_Steam2, target_sid, sizeof(target_sid)), arg2, GetClientName(client, admin_name, sizeof(admin_name)), GetClientAuthId(client, AuthId_Steam2, admin_sid, sizeof(admin_sid)));
 		
 		Handle query_handle = SQL_Query(DB, query);
 		
