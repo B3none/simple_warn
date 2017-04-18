@@ -67,18 +67,6 @@ public void OnPluginStart()
 	sm_warn_roundreset = 		CreateConVar("sm_warn_roundreset", "0", "Reset warnings on each round? 1 = Enabled 0 = Map Start, Default = 0");
 	
 	AutoExecConfig(true, "plugin_simplewarnings");
-	
-	char error[128];
-	SQL_TConnect(GotDatabase, "warnings"); // Connect to database
-	
-	if(hDatabase == INVALID_HANDLE)
-	{
-		PrintToServer("Warning system MySQL connection error: %s", error); // If unsuccessful log error
-	}
-	else
-	{
-		PrintToServer("Connection established, nice one dude!"); // If successful show with message
-	}
 }
 
 public void OnClientPutInServer(int client) 
@@ -99,7 +87,6 @@ public Action OnRoundStart(Handle event, const char[] name, bool dontBroadcast)
 			}
 		}
 	}
-	
 	for(int i = 0; i<= MaxClients; i++)
 	{
 		b_IsPlural[i][WARNINGS] = true;
@@ -119,11 +106,23 @@ public void OnMapStart()
 			}
 		}
 	}
-	for(int i = 0; i<= MaxClients; i++)
+	
+	char error[128];
+	SQL_TConnect(GotDatabase, "warnings"); // Connect to database
+	
+	if(hDatabase == INVALID_HANDLE)
 	{
-		b_IsPlural[i][WARNINGS] = true;
-		b_IsPlural[i][MIC_WARNINGS] = true;
+		PrintToServer("Warning system MySQL connection error: %s", error); // If unsuccessful log error
 	}
+	else
+	{
+		PrintToServer("Connection established, nice one dude!"); // If successful show with message
+	}
+}
+
+public void OnMapEnd()
+{
+	CloseHandle(hDatabase);
 }
 
 public Action WarningsNotify(Handle timer, int client)
@@ -152,14 +151,14 @@ public Action WarningsNotify(Handle timer, int client)
 							b_IsPlural[client][WARNINGS] = true;
 						}
 						
-						if(b_IsPlural[client][WARNINGS])
+						if(b_IsPlural[client][WARNINGS] == true)
 						{
 							s_IsPlural_W[client] = "warnings";
 						} else {
 							s_IsPlural_W[client] = "warning";
 						}
 							
-						if(b_IsPlural[client][MIC_WARNINGS])
+						if(b_IsPlural[client][MIC_WARNINGS] == true)
 						{
 							s_IsPlural_MW[client] = "warnings";
 						} else {
@@ -234,9 +233,9 @@ public Action Command_Warn(int client, int args)
 	GetClientAuthId(client, AuthId_Steam2, admin_sid, sizeof(admin_sid));
 		
 		
-	Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_steamid, reason, admin, admin_steamid) VALUES ('', 'Default', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", FindConVar("hostname"), date, target_name, target_sid, arg2, admin_name, admin_sid);
+	Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_steamid, reason, admin, admin_steamid) VALUES ('', 'Default', '%s', '%s', '%s', '%s', '%s', '%s', '%s');", FindConVar("hostname"), date, target_name, target_sid, arg2, admin_name, admin_sid);
 		
-	SQL_TQuery(hDatabase, GotDatabase, query);
+	SQL_TQuery(hDatabase, GotDatabase, query, DBPrio_Normal);
 	
 	warnings[target]++;
 	roundwarnings[target]++;
@@ -321,7 +320,7 @@ public Action Command_Warn_Mic(int client, int args)
 		int target = FindTarget(client, arg1);
 		if (target == -1)
 		{
-			return Plugin_Handled;
+			//return Plugin_Handled;
 		}
 		
 		if(target == client)
@@ -347,9 +346,9 @@ public Action Command_Warn_Mic(int client, int args)
 		GetClientAuthId(client, AuthId_Steam2, admin_sid, sizeof(admin_sid));
 			
 			
-		Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_steamid, reason, admin, admin_steamid) VALUES ('', 'Mic', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", FindConVar("hostname"), date, target_name, target_sid, arg2, admin_name, admin_sid);
+		Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_steamid, reason, admin, admin_steamid) VALUES ('', 'Mic', '%s', '%s', '%s', '%s', '%s', '%s', '%s');", FindConVar("hostname"), date, target_name, target_sid, arg2, admin_name, admin_sid);
 			
-		SQL_TQuery(hDatabase, GotDatabase, query);
+		SQL_TQuery(hDatabase, GotDatabase, query, DBPrio_Normal);
 		
 		warnings_mic[target]++;
 		
@@ -472,7 +471,7 @@ public Action Command_ResetWarnings(int client, int args)
 	int target = FindTarget(client, arg1);
 	if (target == -1)
 	{
-		return Plugin_Handled;
+		// return Plugin_Handled;
 	}
 	
 	if(warnings[target] == 1)
@@ -491,14 +490,14 @@ public Action Command_ResetWarnings(int client, int args)
 		b_IsPlural[target][WARNINGS] = true;
 	}
 	
-	if(b_IsPlural[target][WARNINGS] == true)
+	if(b_IsPlural[target][WARNINGS])
 	{
 		s_IsPlural_W[target] = "warnings";
 	} else {
 		s_IsPlural_W[target] = "warning";
 	}
 		
-	if(b_IsPlural[target][MIC_WARNINGS] == true)
+	if(b_IsPlural[target][MIC_WARNINGS])
 	{
 		s_IsPlural_MW[target] = "warnings";
 	} else {
@@ -508,10 +507,11 @@ public Action Command_ResetWarnings(int client, int args)
 	if(warnings[target] == 0)
 	{
 		PrintToChat(client, "%s \x07%N \x01has no warnings to reset.", TAG_MESSAGE, target, s_IsPlural_W[target]);
-	} else {
-		PrintToChat(client, "%s You have reset all of \x07%N \x01%s.", TAG_MESSAGE, target, s_IsPlural_W[target]);
-		PrintToChat(target, "%s \x07%N \x01has reset all of your %s.", TAG_MESSAGE, client, s_IsPlural_W[target]);
+		return Plugin_Handled;
 	}
+	
+	PrintToChat(client, "%s You have reset all of \x07%N \x01%s.", TAG_MESSAGE, target, s_IsPlural_W[target]);
+	PrintToChat(target, "%s \x07%N \x01has reset all of your warnings.", TAG_MESSAGE, client, s_IsPlural_W[target]);
 	warnings[target] = 0;
 	warnings_mic[target] = 0;
 	roundwarnings[target] = 0;
@@ -539,42 +539,34 @@ public Action Command_Warnings(int client, int args)
 	if(warnings[target] == 1)
 	{
 		b_IsPlural[target][WARNINGS] = false;
-		return Plugin_Continue;
+	} else {
+		b_IsPlural[target][WARNINGS] = true;
 	}
 	
 	if(warnings_mic[target] == 1)
 	{
 		b_IsPlural[target][MIC_WARNINGS] = false;
-		return Plugin_Continue;
+	} else {
+		b_IsPlural[target][WARNINGS] = true;
 	}
 	
 	if(b_IsPlural[client][WARNINGS])
 	{
 		s_IsPlural_W[client] = "warnings";
-	}
-	else
-	{
+	} else {
 		s_IsPlural_W[client] = "warning";
 	}
 	
 	if(b_IsPlural[client][MIC_WARNINGS])
 	{
 		s_IsPlural_MW[client] = "warnings";
-	}
-	
-	else
-	{
+	} else {
 		s_IsPlural_MW[client] = "warning";
 	}
 	
 	PrintToChat(client, "%s %N\x01 has \x07%d \x01%s and \x07%d \x01mic %s on record.", TAG_MESSAGE, target, warnings[target], s_IsPlural_W[target], warnings_mic[target], s_IsPlural_MW[target]);
 	
 	return Plugin_Handled;
-}
-
-public void OnPluginEnd()
-{
-	CloseHandle(hDatabase);
 }
 
 public void GotDatabase(Handle owner, Handle hndl, const char[] error, any data)
