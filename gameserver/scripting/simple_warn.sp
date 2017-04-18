@@ -320,7 +320,7 @@ public Action Command_Warn_Mic(int client, int args)
 		int target = FindTarget(client, arg1);
 		if (target == -1)
 		{
-			//return Plugin_Handled;
+			return Plugin_Handled;
 		}
 		
 		if(target == client)
@@ -471,13 +471,12 @@ public Action Command_ResetWarnings(int client, int args)
 	int target = FindTarget(client, arg1);
 	if (target == -1)
 	{
-		// return Plugin_Handled;
+		return Plugin_Handled;
 	}
 	
 	if(warnings[target] == 1)
 	{
 		b_IsPlural[target][WARNINGS] = false;
-		return Plugin_Continue;
 	} else {
 		b_IsPlural[target][WARNINGS] = true;
 	}
@@ -485,7 +484,6 @@ public Action Command_ResetWarnings(int client, int args)
 	if(warnings_mic[target] == 1)
 	{
 		b_IsPlural[target][MIC_WARNINGS] = false;
-		return Plugin_Continue;
 	} else {
 		b_IsPlural[target][WARNINGS] = true;
 	}
