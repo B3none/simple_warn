@@ -35,55 +35,65 @@
 	include('includes/config.php');
 	
 	echo"<title>$page_title</title>";
-
-	$order_query = "SELECT * FROM `$db_table` ORDER BY `date` DESC";
-	$connect_and_order = mysql_query($order_query, $connect);
-
-	echo "
-	<table id='warnings' align='center'>
-		<tr>
-			<th>Warning ID</th>
-			<th>Warning Type</th>
-			<th>Server</th>
-			<th>Client</th>
-			<th>Client Steam ID</th>
-			<th>Admin</th>
-			<th>Admin Steam ID</th>
-			<th>Reason</th>
-			<th>Date</th>
-	    </tr>
-	</td>";
-
-	$id = 0;
-	while($row = mysql_fetch_array($connect_and_order))
+	
+	if(file_exists('install/index.php'))
 	{
-	    $id++;
-		
-		$warningtype = $row['warningtype'];
-		$server = $row['server'];
-		$client = $row['client'];
-		$admin = $row['admin'];
-		$date = $row['date'];
-		$reason = $row['reason'];
-		$admin_steamid = $row ['admin_steamid'];
-		$client_steamid = $row ['client_steamid'];
-		
-		echo"<tr>
-			<td>$id</td>
-			<td>$warningtype</td>
-			<td>$server</td>
-			<td>$client</td>
-			<td>$client_steamid</td>
-			<td>$admin</td>
-			<td>$admin_steamid</td>
-			<td>$reason</td>
-			<td>$date</td>
-		</tr>
-		";
+		echo "
+		<h1>ERROR!</h1>
+		<p>Please delete the install directory</p>";
 	}
-	echo"</table>";
+	
+	else
+	{
+		$order_query = "SELECT * FROM `$db_table` ORDER BY `date` DESC";
+		$connect_and_order = mysql_query($order_query, $connect);
 
-	mysql_close($connect);
+		echo "
+		<table id='warnings' align='center'>
+			<tr>
+				<th>Warning ID</th>
+				<th>Warning Type</th>
+				<th>Server</th>
+				<th>Client</th>
+				<th>Client Steam ID</th>
+				<th>Admin</th>
+				<th>Admin Steam ID</th>
+				<th>Reason</th>
+				<th>Date</th>
+			</tr>
+		</td>";
+
+		$id = 0;
+		while($row = mysql_fetch_array($connect_and_order))
+		{
+			$id++;
+			
+			$warningtype = $row['warningtype'];
+			$server = $row['server'];
+			$client = $row['client'];
+			$admin = $row['admin'];
+			$date = $row['date'];
+			$reason = $row['reason'];
+			$admin_steamid = $row ['admin_steamid'];
+			$client_steamid = $row ['client_steamid'];
+			
+			echo"<tr>
+				<td>$id</td>
+				<td>$warningtype</td>
+				<td>$server</td>
+				<td>$client</td>
+				<td>$client_steamid</td>
+				<td>$admin</td>
+				<td>$admin_steamid</td>
+				<td>$reason</td>
+				<td>$date</td>
+			</tr>
+			";
+		}
+		echo"</table>";
+
+		mysql_close($connect);
+	}
 	?>
     </body
 	
