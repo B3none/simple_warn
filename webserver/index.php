@@ -35,6 +35,9 @@
 	include('includes/config.php');
 	
 	echo"<title>$page_title</title>";
+	$page = $_GET['page'];
+	$one = 1 + (($page - 1) * 20);
+	$two = 20 + (($page - 1) * 20);
 	
 	if(file_exists('install/index.php'))
 	{
@@ -47,7 +50,8 @@
 	{
 		$order_query = "SELECT * FROM `$db_table` ORDER BY `date` DESC";
 		$connect_and_order = mysql_query($order_query, $connect);
-		$total_pages = (mysql_num_rows($connect_and_order)) / 20;
+		$total_pages_decimal =(mysql_num_rows($connect_and_order)) / 20;
+		$total_pages = round($total_pages_decimal + 1, 0, PHP_ROUND_HALF_UP);
 
 		echo "
 		<table id='warnings' align='center'>
