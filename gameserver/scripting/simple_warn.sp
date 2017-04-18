@@ -141,7 +141,6 @@ public Action WarningsNotify(Handle timer, int client)
 						if(warnings[client] == 1)
 						{
 							b_IsPlural[client][WARNINGS] = false;
-							return Plugin_Continue;
 						} else {
 							b_IsPlural[client][WARNINGS] = true;
 						}
@@ -149,7 +148,6 @@ public Action WarningsNotify(Handle timer, int client)
 						if(warnings_mic[client] == 1)
 						{
 							b_IsPlural[client][MIC_WARNINGS] = false;
-							return Plugin_Continue;
 						} else {
 							b_IsPlural[client][WARNINGS] = true;
 						}
@@ -157,23 +155,18 @@ public Action WarningsNotify(Handle timer, int client)
 						if(b_IsPlural[client][WARNINGS])
 						{
 							s_IsPlural_W[client] = "warnings";
-						}
-						else
-						{
+						} else {
 							s_IsPlural_W[client] = "warning";
 						}
-						
+							
 						if(b_IsPlural[client][MIC_WARNINGS])
 						{
 							s_IsPlural_MW[client] = "warnings";
-						}
-						
-						else
-						{
+						} else {
 							s_IsPlural_MW[client] = "warning";
 						}
 						
-						PrintToChat(i, "%s\x07 WARNING:\x01 Player\x07 %N\x01 has \x07%d \x01%s and \x07%d \x01 mic %s on record.", TAG_MESSAGE, client, warnings[client], s_IsPlural_W[client], warnings_mic[client], s_IsPlural_MW[client]);
+						PrintToChat(i, "%s\x07 WARNING:\x01 Player\x07 %N\x01 has \x07%d \x01%s and \x07%d \x01mic %s on record.", TAG_MESSAGE, client, warnings[client], s_IsPlural_W[client], warnings_mic[client], s_IsPlural_MW[client]);
 					}
 				}
 			}
@@ -208,67 +201,6 @@ public Action Command_Warn(int client, int args)
 	}
 	*/
 	
-	/* SQL QUERY SECTION */
-	char query[2048];
-	char admin_name[64];
-	char admin_sid[64];
-	char target_name[64];
-	char target_sid[64];
-	char date[64];
-		
-	Format(date, sizeof(date), "%d/%m/%Y, %H:%M", GetTime());
-	GetClientName(target, target_name, sizeof(target_name));
-	GetClientAuthId(target, AuthId_Steam2, target_sid, sizeof(target_sid));
-	GetClientName(client, admin_name, sizeof(admin_name));
-	GetClientAuthId(client, AuthId_Steam2, admin_sid, sizeof(admin_sid));
-		
-		
-	Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_steamid, reason, admin, admin_steamid) VALUES ('', 'Default', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", FindConVar("hostname"), date, target_name, target_sid, arg2, admin_name, admin_sid);
-		
-	SQL_TQuery(hDatabase, GotDatabase, query);
-	
-	warnings[target]++;
-	roundwarnings[target]++;
-	PrintToChat(client, "%s You have warned \x07%N \x01for reason: %s", TAG_MESSAGE, target, arg2);
-	PrintToChat(target, "%s You have been warned by \x07%N \x01for reason: %s", TAG_MESSAGE, client, arg2);
-	
-	if(warnings[target] == 1)
-	{
-		b_IsPlural[target][WARNINGS] = false;
-		return Plugin_Continue;
-	} else {
-		b_IsPlural[target][WARNINGS] = true;
-	}
-	
-	if(warnings_mic[target] == 1)
-	{
-		b_IsPlural[target][MIC_WARNINGS] = false;
-		return Plugin_Continue;
-	} else {
-		b_IsPlural[target][WARNINGS] = true;
-	}
-	
-	if(b_IsPlural[target][WARNINGS])
-	{
-		s_IsPlural_W[target] = "warnings";
-	}
-	else
-	{
-		s_IsPlural_W[target] = "warning";
-	}
-		
-	if(b_IsPlural[target][MIC_WARNINGS])
-	{
-		s_IsPlural_MW[target] = "warnings";
-	}
-	
-	else
-	{
-		s_IsPlural_MW[target] = "warning";
-	}
-	
-	PrintToChat(target, "%s You currently have \x07%d \x01%s.", TAG_MESSAGE, warnings[target], s_IsPlural_W[target]);
-	
 	for(int i = 1; i <= MaxClients; i++)
 	{
 		if (IsClientInGame(i))
@@ -285,6 +217,63 @@ public Action Command_Warn(int client, int args)
 	}
 	LogAction(client, target, "\"%N\" warned \"%N\" (reason: %s)", client, target, arg2);
 	
+	/* SQL QUERY SECTION */
+	char query[2048];
+	char admin_name[64];
+	char admin_sid[64];
+	char target_name[64];
+	char target_sid[64];
+	char date[64];
+	int timestamp;
+	
+	timestamp = GetTime();
+	FormatTime(date, sizeof(date), "%Y/%m/%d", timestamp);
+	GetClientName(target, target_name, sizeof(target_name));
+	GetClientAuthId(target, AuthId_Steam2, target_sid, sizeof(target_sid));
+	GetClientName(client, admin_name, sizeof(admin_name));
+	GetClientAuthId(client, AuthId_Steam2, admin_sid, sizeof(admin_sid));
+		
+		
+	Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_steamid, reason, admin, admin_steamid) VALUES ('', 'Default', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", FindConVar("hostname"), date, target_name, target_sid, arg2, admin_name, admin_sid);
+		
+	SQL_TQuery(hDatabase, GotDatabase, query);
+	
+	warnings[target]++;
+	roundwarnings[target]++;
+	
+	if(warnings[target] == 1)
+	{
+		b_IsPlural[target][WARNINGS] = false;
+	} else {
+		b_IsPlural[target][WARNINGS] = true;
+	}
+	
+	if(warnings_mic[target] == 1)
+	{
+		b_IsPlural[target][MIC_WARNINGS] = false;
+	} else {
+		b_IsPlural[target][WARNINGS] = true;
+	}
+	
+	if(b_IsPlural[target][WARNINGS] == true)
+	{
+		s_IsPlural_W[target] = "warnings";
+	} else {
+		s_IsPlural_W[target] = "warning";
+	}
+		
+	if(b_IsPlural[target][MIC_WARNINGS] == true)
+	{
+		s_IsPlural_MW[target] = "warnings";
+	} else {
+		s_IsPlural_MW[target] = "warning";
+	}
+	
+	PrintToChat(client, "%s You have warned \x07%N \x01for reason: %s", TAG_MESSAGE, target, arg2);
+	PrintToChat(target, "%s You have been warned by \x07%N \x01for reason: %s", TAG_MESSAGE, client, arg2);
+	
+	PrintToChat(target, "%s You currently have \x07%d \x01%s.", TAG_MESSAGE, warnings[target], s_IsPlural_W[target]);
+	
 	if(GetConVarInt(sm_warn_maxwarnings_enabled) == 1)
 	{
 		if(roundwarnings[target] >= GetConVarInt(sm_warn_maxroundwarnings))
@@ -296,7 +285,7 @@ public Action Command_Warn(int client, int args)
 				warnings_mic[target] = 0;
 				roundwarnings[target] = 0;
 			}
-			BanClient(target, GetConVarInt(sm_warn_banduration), BANFLAG_AUTO, "S-WARN: Too many Warnings", "Too many warnings in one round.");
+			BanClient(target, GetConVarInt(sm_warn_banduration), BANFLAG_AUTO, "S-WARN: Too many Warnings", "Too many warnings in one map.");
 			
 		}
 		
@@ -348,15 +337,17 @@ public Action Command_Warn_Mic(int client, int args)
 		char target_name[64];
 		char target_sid[64];
 		char date[64];
-			
-		Format(date, sizeof(date), "%d/%m/%Y, %H:%M", GetTime());
+		int timestamp;
+	
+		timestamp = GetTime();
+		FormatTime(date, sizeof(date), "%Y/%m/%d", timestamp);
 		GetClientName(target, target_name, sizeof(target_name));
 		GetClientAuthId(target, AuthId_Steam2, target_sid, sizeof(target_sid));
 		GetClientName(client, admin_name, sizeof(admin_name));
 		GetClientAuthId(client, AuthId_Steam2, admin_sid, sizeof(admin_sid));
 			
 			
-		Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_steamid, reason, admin, admin_steamid) VALUES ('', 'Default', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", FindConVar("hostname"), date, target_name, target_sid, arg2, admin_name, admin_sid);
+		Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_steamid, reason, admin, admin_steamid) VALUES ('', 'Mic', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", FindConVar("hostname"), date, target_name, target_sid, arg2, admin_name, admin_sid);
 			
 		SQL_TQuery(hDatabase, GotDatabase, query);
 		
@@ -374,7 +365,6 @@ public Action Command_Warn_Mic(int client, int args)
 		if(warnings[target] == 1)
 		{
 			b_IsPlural[target][WARNINGS] = false;
-			return Plugin_Continue;
 		} else {
 			b_IsPlural[target][WARNINGS] = true;
 		}
@@ -382,27 +372,21 @@ public Action Command_Warn_Mic(int client, int args)
 		if(warnings_mic[target] == 1)
 		{
 			b_IsPlural[target][MIC_WARNINGS] = false;
-			return Plugin_Continue;
 		} else {
 			b_IsPlural[target][WARNINGS] = true;
 		}
 		
-		if(b_IsPlural[target][WARNINGS])
+		if(b_IsPlural[target][WARNINGS] == true)
 		{
 			s_IsPlural_W[target] = "warnings";
-		}
-		else
-		{
+		} else {
 			s_IsPlural_W[target] = "warning";
 		}
-		
-		if(b_IsPlural[target][MIC_WARNINGS])
+			
+		if(b_IsPlural[target][MIC_WARNINGS] == true)
 		{
 			s_IsPlural_MW[target] = "warnings";
-		}
-		
-		else
-		{
+		} else {
 			s_IsPlural_MW[target] = "warning";
 		}
 	
@@ -495,35 +479,34 @@ public Action Command_ResetWarnings(int client, int args)
 	{
 		b_IsPlural[target][WARNINGS] = false;
 		return Plugin_Continue;
+	} else {
+		b_IsPlural[target][WARNINGS] = true;
 	}
 	
 	if(warnings_mic[target] == 1)
 	{
 		b_IsPlural[target][MIC_WARNINGS] = false;
 		return Plugin_Continue;
+	} else {
+		b_IsPlural[target][WARNINGS] = true;
 	}
 	
 	if(b_IsPlural[target][WARNINGS])
 	{
 		s_IsPlural_W[target] = "warnings";
-	}
-	else
-	{
+	} else {
 		s_IsPlural_W[target] = "warning";
 	}
-	
+		
 	if(b_IsPlural[target][MIC_WARNINGS])
 	{
 		s_IsPlural_MW[target] = "warnings";
-	}
-	
-	else
-	{
+	} else {
 		s_IsPlural_MW[target] = "warning";
 	}
 	
 	PrintToChat(client, "%s You have reset all of \x07%N \x01%s.", TAG_MESSAGE, target, s_IsPlural_W[target]);
-	PrintToChat(target, "%s %N \x01 has reset all of your %s.", TAG_MESSAGE, client, s_IsPlural_W[target]);
+	PrintToChat(target, "%s \x07%N \x01has reset all of your %s.", TAG_MESSAGE, client, s_IsPlural_W[target]);
 	warnings[target] = 0;
 	warnings_mic[target] = 0;
 	roundwarnings[target] = 0;
