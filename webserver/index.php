@@ -51,6 +51,7 @@ while($row = mysql_fetch_array($connect_and_order))
 	</tr>
 	";
 }
-
+echo"</table>";
+	
 mysql_close($connect_and_order);
 ?>
