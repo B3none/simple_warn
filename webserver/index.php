@@ -33,6 +33,7 @@
 			<th>Server</th>
 			<th>Client</th>
 			<th>Admin</th>
+			<th>Reason</th>
 			<th>Date</th>
 	    </tr>
 	</td>";
@@ -47,6 +48,7 @@
 		$client = $row['client'];
 		$admin = $row['admin'];
 		$date = $row['date'];
+		$reason = $row['reason'];
 		
 		echo"<tr>
 			<td>$id</td>
@@ -54,6 +56,7 @@
 			<td>$server</td>
 			<td>$client</td>
 			<td>$admin</td>
+			<td>$reason</td>
 			<td>$date</td>
 		</tr>
 		";
