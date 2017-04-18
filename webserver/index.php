@@ -40,11 +40,16 @@ $id = 0;
 while($row = mysql_fetch_array($connect_and_order))
 {
     $id++;
-    
-    if()
-    {
-        
-    }
+	echo"
+	<tr>
+		<td>$id</td>
+		<td>$row['warningtype']</td>
+		<td>$row['server']</td>
+		<td>$row['client']</td>
+		<td>$row['admin']</td>
+		<td>$row['date']</td>
+	</tr>
+	";
 }
 
 mysql_close($connect_and_order);
