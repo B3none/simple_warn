@@ -17,9 +17,8 @@ int roundwarnings[MAXPLAYERS+1];
 bool b_IsPlural[MAXPLAYERS+1][2];
 char s_IsPlural_W[MAXPLAYERS+1][16];
 char s_IsPlural_MW[MAXPLAYERS+1][16];
-char error_query[128];
 
-Handle DB = INVALID_HANDLE;
+Handle hDatabase = INVALID_HANDLE;
 
 #define WARNINGS 0
 #define MIC_WARNINGS 1
@@ -70,9 +69,9 @@ public void OnPluginStart()
 	AutoExecConfig(true, "plugin_simplewarnings");
 	
 	char error[128];
-	DB = SQL_Connect("warnings", true, error, sizeof(error)); // Connect to database
+	SQL_TConnect(GotDatabase, "warnings"); // Connect to database
 	
-	if(DB == INVALID_HANDLE)
+	if(hDatabase == INVALID_HANDLE)
 	{
 		PrintToServer("Warning system MySQL connection error: %s", error); // If unsuccessful log error
 	}
@@ -143,12 +142,16 @@ public Action WarningsNotify(Handle timer, int client)
 						{
 							b_IsPlural[client][WARNINGS] = false;
 							return Plugin_Continue;
+						} else {
+							b_IsPlural[client][WARNINGS] = true;
 						}
 						
 						if(warnings_mic[client] == 1)
 						{
 							b_IsPlural[client][MIC_WARNINGS] = false;
 							return Plugin_Continue;
+						} else {
+							b_IsPlural[client][WARNINGS] = true;
 						}
 						
 						if(b_IsPlural[client][WARNINGS])
@@ -197,11 +200,32 @@ public Action Command_Warn(int client, int args)
 		return Plugin_Handled;
 	}
 	
+	/*
 	if(target == client)
 	{
 		PrintToChat(client, "%s You can't warn yourself!",  TAG_MESSAGE);
 		return Plugin_Handled;
 	}
+	*/
+	
+	/* SQL QUERY SECTION */
+	char query[2048];
+	char admin_name[64];
+	char admin_sid[64];
+	char target_name[64];
+	char target_sid[64];
+	char date[64];
+		
+	Format(date, sizeof(date), "%d/%m/%Y, %H:%M", GetTime());
+	GetClientName(target, target_name, sizeof(target_name));
+	GetClientAuthId(target, AuthId_Steam2, target_sid, sizeof(target_sid));
+	GetClientName(client, admin_name, sizeof(admin_name));
+	GetClientAuthId(client, AuthId_Steam2, admin_sid, sizeof(admin_sid));
+		
+		
+	Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_steamid, reason, admin, admin_steamid) VALUES ('', 'Default', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", FindConVar("hostname"), date, target_name, target_sid, arg2, admin_name, admin_sid);
+		
+	SQL_TQuery(hDatabase, GotDatabase, query);
 	
 	warnings[target]++;
 	roundwarnings[target]++;
@@ -212,12 +236,16 @@ public Action Command_Warn(int client, int args)
 	{
 		b_IsPlural[target][WARNINGS] = false;
 		return Plugin_Continue;
+	} else {
+		b_IsPlural[target][WARNINGS] = true;
 	}
 	
 	if(warnings_mic[target] == 1)
 	{
 		b_IsPlural[target][MIC_WARNINGS] = false;
 		return Plugin_Continue;
+	} else {
+		b_IsPlural[target][WARNINGS] = true;
 	}
 	
 	if(b_IsPlural[target][WARNINGS])
@@ -284,33 +312,6 @@ public Action Command_Warn(int client, int args)
 			BanClient(target, GetConVarInt(sm_warn_banduration), BANFLAG_AUTO, "S-WARN: Too many Warnings", "Too many total warnings.");
 		}
 	} 
-	
-	/* SQL QUERY SECTION */
-	char query[512];
-	char admin_name[64];
-	char admin_sid[64];
-	char target_name[64];
-	char target_sid[64];
-	char date[64];
-	
-	Format(date, sizeof(date), "%d/%m/%Y, %H:%M", GetTime());
-	
-	Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_sid, reason, admin, admin_sid) VALUES ('', 'Default', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", FindConVar("hostname"), date, GetClientName(target, target_name, sizeof(target_name)), GetClientAuthId(target, AuthId_Steam2, target_sid, sizeof(target_sid)), arg2, GetClientName(client, admin_name, sizeof(admin_name)), GetClientAuthId(client, AuthId_Steam2, admin_sid, sizeof(admin_sid)));
-	
-	Handle query_handle = SQL_Query(DB, query);
-	
-	if(query_handle != INVALID_HANDLE)
-	{
-		ReplyToCommand(client, "%s SQL Query successfully sent.", TAG_MESSAGE);
-		LogToFile("logs/plugin_simplewarnings.log", "Admin %s warned %s for %s", admin_name, target_name, arg2);
-	}
-	
-	else
-	{
-		LogToFile("logs/plugin_simplewarnings_sqlerrors.log", "MySQL Error: %s", SQL_GetError(DB, error_query, sizeof(error_query)));
-		ReplyToCommand(client, "%s Eek! Query failed, contact server owner!", TAG_MESSAGE);
-	}
-	
 	return Plugin_Handled;
 }
 
@@ -340,6 +341,25 @@ public Action Command_Warn_Mic(int client, int args)
 			return Plugin_Handled;
 		}
 		
+		/* SQL QUERY SECTION */
+		char query[2048];
+		char admin_name[64];
+		char admin_sid[64];
+		char target_name[64];
+		char target_sid[64];
+		char date[64];
+			
+		Format(date, sizeof(date), "%d/%m/%Y, %H:%M", GetTime());
+		GetClientName(target, target_name, sizeof(target_name));
+		GetClientAuthId(target, AuthId_Steam2, target_sid, sizeof(target_sid));
+		GetClientName(client, admin_name, sizeof(admin_name));
+		GetClientAuthId(client, AuthId_Steam2, admin_sid, sizeof(admin_sid));
+			
+			
+		Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_steamid, reason, admin, admin_steamid) VALUES ('', 'Default', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", FindConVar("hostname"), date, target_name, target_sid, arg2, admin_name, admin_sid);
+			
+		SQL_TQuery(hDatabase, GotDatabase, query);
+		
 		warnings_mic[target]++;
 		
 		if(GetConVarBool(sm_warn_microundtotal))
@@ -355,12 +375,16 @@ public Action Command_Warn_Mic(int client, int args)
 		{
 			b_IsPlural[target][WARNINGS] = false;
 			return Plugin_Continue;
+		} else {
+			b_IsPlural[target][WARNINGS] = true;
 		}
 		
 		if(warnings_mic[target] == 1)
 		{
 			b_IsPlural[target][MIC_WARNINGS] = false;
 			return Plugin_Continue;
+		} else {
+			b_IsPlural[target][WARNINGS] = true;
 		}
 		
 		if(b_IsPlural[target][WARNINGS])
@@ -439,32 +463,6 @@ public Action Command_Warn_Mic(int client, int args)
 					BanClient(target, GetConVarInt(sm_warn_banduration), BANFLAG_AUTO, "S-WARN: Too many Mic Warnings", "Too many mic warnings in one round.");
 				}
 			}
-		}
-		
-		/* SQL QUERY SECTION */
-		char query[512];
-		char admin_name[64];
-		char admin_sid[64];
-		char target_name[64];
-		char target_sid[64];
-		char date[64];
-		
-		Format(date, sizeof(date), "%d/%m/%Y, %H:%M", GetTime());
-		
-		Format(query, sizeof(query),"INSERT INTO warnings (warningid, warningtype, server, date, client, client_sid, reason, admin, admin_sid) VALUES ('', 'Mic', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", FindConVar("hostname"), date, GetClientName(target, target_name, sizeof(target_name)), GetClientAuthId(target, AuthId_Steam2, target_sid, sizeof(target_sid)), arg2, GetClientName(client, admin_name, sizeof(admin_name)), GetClientAuthId(client, AuthId_Steam2, admin_sid, sizeof(admin_sid)));
-		
-		Handle query_handle = SQL_Query(DB, query);
-		
-		if(query_handle != INVALID_HANDLE)
-		{
-			ReplyToCommand(client, "%s SQL Query successfully sent.", TAG_MESSAGE);
-			LogToFile("logs/plugin_simplewarnings.log", "Admin %s warned %s for %s", admin_name, target_name, arg2);
-		}
-		
-		else
-		{
-			LogToFile("logs/plugin_simplewarnings_sqlerrors.log", "MySQL Error: %s", SQL_GetError(DB, error_query, sizeof(error_query)));
-			ReplyToCommand(client, "%s Eek! Query failed, contact server owner!", TAG_MESSAGE);
 		}
 		return Plugin_Handled;
 	}	
@@ -584,4 +582,19 @@ public Action Command_Warnings(int client, int args)
 	PrintToChat(client, "%s %N\x01 has \x07%d \x01%s and \x07%d \x01mic %s on record.", TAG_MESSAGE, target, warnings[target], s_IsPlural_W[target], warnings_mic[target], s_IsPlural_MW[target]);
 	
 	return Plugin_Handled;
+}
+
+public void OnPluginEnd()
+{
+	CloseHandle(hDatabase);
+}
+
+public void GotDatabase(Handle owner, Handle hndl, const char[] error, any data)
+{
+	if (hndl == INVALID_HANDLE)
+	{
+		LogError("Database failure: %s", error);
+	} else {
+		hDatabase = hndl;
+	}
 }
