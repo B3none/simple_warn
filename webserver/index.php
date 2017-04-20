@@ -1,24 +1,24 @@
 <html>
     <head>
         <style>
-		table, th, td 
+        table, th, td 
 		{
-		    border: 2px solid black;
-		    border-collapse: collapse;
-		}
-
-		th, td 
-			{
-		    padding: 5px;
-		    text-align: left;    
-		}
-
+            border: 2px solid black;
+            border-collapse: collapse;
+        }
+		
+        th, td 
+		{
+            padding: 5px;
+            text-align: left;    
+        }
+		
 		th
 		{
 			background-color: #4CAF50;
 			color: white;
 		}
-
+		
 		tr:nth-child(even)
 		{
 			background-color: #D3D3D3;
@@ -36,78 +36,93 @@
 	
 	echo"<title>$page_title</title>";
 	$page = $_GET['page'];
-	$one = 1 + (($page - 1) * 20);
-	$two = 20 + (($page - 1) * 20);
-	
-	if(file_exists('install/index.php'))
+		
+	if(empty($page))
 	{
-		echo "
-		<h1>ERROR!</h1>
-		<p>Please delete the install directory</p>";
+		header("Location: /index.php?page=1");
 	}
 	
 	else
 	{
-		$order_query = "SELECT * FROM `$db_table` ORDER BY `date` DESC";
-		$connect_and_order = mysql_query($order_query, $connect);
-		$total_pages_decimal =(mysql_num_rows($connect_and_order)) / 20;
-		$total_pages = round($total_pages_decimal + 1, 0, PHP_ROUND_HALF_UP);
-
-		echo "
-		<table id='warnings' align='center'>
-			<tr>
-				<th>Warning ID</th>
-				<th>Warning Type</th>
-				<th>Server</th>
-				<th>Client</th>
-				<th>Client Steam ID</th>
-				<th>Admin</th>
-				<th>Admin Steam ID</th>
-				<th>Reason</th>
-				<th>Date</th>
-			</tr>
-		</td>";
-
-		$id = 0;
-		while($row = mysql_fetch_array($connect_and_order))
-		{
-			$id++;
-			
-			$warningtype = $row['warningtype'];
-			$server = $row['server'];
-			$client = $row['client'];
-			$admin = $row['admin'];
-			$date = $row['date'];
-			$reason = $row['reason'];
-			$admin_steamid = $row ['admin_steamid'];
-			$client_steamid = $row ['client_steamid'];
-			
-			echo"<tr>
-				<td>$id</td>
-				<td>$warningtype</td>
-				<td>$server</td>
-				<td>$client</td>
-				<td>$client_steamid</td>
-				<td>$admin</td>
-				<td>$admin_steamid</td>
-				<td>$reason</td>
-				<td>$date</td>
-			</tr>
-			";
-		}
-		echo"</table>";
+		$one = 1 + (($page - 1) * 20);
+		$one_one = $one + 20;
 		
-		for($i = 1; $i <= $total_pages; $i++)
+		$two = 20;
+		
+		$order_query = "SELECT * FROM `$db_table` ORDER BY `date` DESC LIMIT $one, $two";
+		
+		$connect_and_order = mysql_query($order_query, $connect);
+		$total_items = mysql_num_rows($connect_and_order);
+		
+		if($total_items >= 1)
 		{
-			echo "<a align='center' href='/index.php?page=$i'>$i</a>";
+			echo "
+			<table id='warnings' align='center'>
+				<tr>
+					<th>Warning ID</th>
+					<th>Warning Type</th>
+					<th>Server</th>
+					<th>Client</th>
+					<th>Client Steam ID</th>
+					<th>Admin</th>
+					<th>Admin Steam ID</th>
+					<th>Reason</th>
+					<th>Date</th>
+				</tr>
+			</td>";
+			
+			$id = $one - 1;
+			
+			while($row = mysql_fetch_array($connect_and_order))
+			{
+				$id++;
+				
+				$warningtype = $row['warningtype'];
+				$server = $row['server'];
+				$client = $row['client'];
+				$admin = $row['admin'];
+				$date = $row['date'];
+				$reason = $row['reason'];
+				$admin_steamid = $row ['admin_steamid'];
+				$client_steamid = $row ['client_steamid'];
+				
+				echo"<tr>
+					<td>$id</td>
+					<td>$warningtype</td>
+					<td>$server</td>
+					<td>$client</td>
+					<td>$client_steamid</td>
+					<td>$admin</td>
+					<td>$admin_steamid</td>
+					<td>$reason</td>
+					<td>$date</td>
+				</tr>
+				";
+			}
+			echo"</table>";
+			
+			$tpq = "SELECT * FROM `warnings`";
+			$tpq_done = mysql_query($tpq, $connect);
+			$total_pages = (mysql_num_rows($tpq_done)) / 20;
+			
+			
+			for($i = 1; $i <= $total_pages + 1; $i++)
+			{
+				echo "<a href='/index.php?page=$i'>$i</a> ";
+			}
+			echo "<br><p align='center'>Showing results $one to $one_one. (Page $page)</p>";
+			mysql_close($connect);
 		}
-		mysql_close($connect);
+		
+		else
+		{
+			echo "No results found!";
+		}
 	}
 	?>
     </body
 	
     <footer>
-		<br>
 		<p align='center'>Coded by <a href='http://steamcommunity.com/profiles/76561198028510846'>B3none</a>.</p>
     </footer>
 </html>
