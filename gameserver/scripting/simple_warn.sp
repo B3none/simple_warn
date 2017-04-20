@@ -43,7 +43,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	LoadTranslations("common.phrases");
+	LoadTranslations("simplewarn.phrases");
 	RegAdminCmd("sm_warn", Command_Warn, ADMFLAG_BAN);
 	RegAdminCmd("sm_warnmic", Command_Warn_Mic, ADMFLAG_BAN);
 	
@@ -158,7 +158,7 @@ public Action Command_Warn(int client, int args)
 	
 	if(target == client)
 	{
-		PrintToChat(client, "%s You can't warn yourself!",  TAG_MESSAGE);
+		PrintToChat(client, "%s %t", "Self Warn", TAG_MESSAGE);
 		return Plugin_Handled;
 	}
 	
@@ -259,7 +259,7 @@ public Action Command_Warn_Mic(int client, int args)
 		
 		if(target == client)
 		{
-			PrintToChat(client, "%s You can't mic warn yourself!", TAG_MESSAGE);
+			PrintToChat(client, "%s %t", "Self Warn", TAG_MESSAGE);
 			return Plugin_Handled;
 		}
 		
