@@ -14,9 +14,6 @@
 int warnings[MAXPLAYERS+1];
 int warnings_mic[MAXPLAYERS+1]; 
 int roundwarnings[MAXPLAYERS+1];
-bool b_IsPlural[MAXPLAYERS+1][2];
-char s_IsPlural_W[MAXPLAYERS+1][16];
-char s_IsPlural_MW[MAXPLAYERS+1][16];
 
 Handle hDatabase = INVALID_HANDLE;
 
@@ -87,11 +84,6 @@ public Action OnRoundStart(Handle event, const char[] name, bool dontBroadcast)
 			}
 		}
 	}
-	for(int i = 0; i<= MaxClients; i++)
-	{
-		b_IsPlural[i][WARNINGS] = true;
-		b_IsPlural[i][MIC_WARNINGS] = true;
-	}
 } 
 
 public void OnMapStart()
@@ -136,36 +128,8 @@ public Action WarningsNotify(Handle timer, int client)
 				if(i != client) 
 				{
 					if(sm_warn_announce)
-					{
-						if(warnings[client] == 1)
-						{
-							b_IsPlural[client][WARNINGS] = false;
-						} else {
-							b_IsPlural[client][WARNINGS] = true;
-						}
-						
-						if(warnings_mic[client] == 1)
-						{
-							b_IsPlural[client][MIC_WARNINGS] = false;
-						} else {
-							b_IsPlural[client][WARNINGS] = true;
-						}
-						
-						if(b_IsPlural[client][WARNINGS] == true)
-						{
-							s_IsPlural_W[client] = "warnings";
-						} else {
-							s_IsPlural_W[client] = "warning";
-						}
-							
-						if(b_IsPlural[client][MIC_WARNINGS] == true)
-						{
-							s_IsPlural_MW[client] = "warnings";
-						} else {
-							s_IsPlural_MW[client] = "warning";
-						}
-						
-						PrintToChat(i, "%s\x07 WARNING:\x01 Player\x07 %N\x01 has \x07%d \x01%s and \x07%d \x01mic %s on record.", TAG_MESSAGE, client, warnings[client], s_IsPlural_W[client], warnings_mic[client], s_IsPlural_MW[client]);
+					{						
+						PrintToChat(i, "%s\x07 WARNING:\x01 Player\x07 %N\x01 has \x07%d \x01warning(s) and \x07%d \x01mic warning(s) on record.", TAG_MESSAGE, client, warnings[client], warnings_mic[client]);
 					}
 				}
 			}
@@ -192,13 +156,11 @@ public Action Command_Warn(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	/*
 	if(target == client)
 	{
 		PrintToChat(client, "%s You can't warn yourself!",  TAG_MESSAGE);
 		return Plugin_Handled;
 	}
-	*/
 	
 	for(int i = 1; i <= MaxClients; i++)
 	{
@@ -208,7 +170,7 @@ public Action Command_Warn(int client, int args)
 			{
 				if(i != client)
 				{
-					PrintToChat(i, "%s %N\x01 now has \x07%d \x01%s and \x07%d \x01mic %s on record.", TAG_MESSAGE, target, warnings[target], s_IsPlural_W[target], warnings_mic[target], s_IsPlural_MW[target]);
+					PrintToChat(i, "%s %N\x01 now has \x07%d \x01warning(s) and \x07%d \x01mic warning(s) on record.", TAG_MESSAGE, target, warnings[target], warnings_mic[target]);
 					PrintToChat(i, "%s \x07%N \x01has warned \x07%N \x01for reason: %s", TAG_MESSAGE, client, target, arg2);
 				}
 			}
@@ -240,38 +202,10 @@ public Action Command_Warn(int client, int args)
 	warnings[target]++;
 	roundwarnings[target]++;
 	
-	if(warnings[target] == 1)
-	{
-		b_IsPlural[target][WARNINGS] = false;
-	} else {
-		b_IsPlural[target][WARNINGS] = true;
-	}
-	
-	if(warnings_mic[target] == 1)
-	{
-		b_IsPlural[target][MIC_WARNINGS] = false;
-	} else {
-		b_IsPlural[target][WARNINGS] = true;
-	}
-	
-	if(b_IsPlural[target][WARNINGS] == true)
-	{
-		s_IsPlural_W[target] = "warnings";
-	} else {
-		s_IsPlural_W[target] = "warning";
-	}
-		
-	if(b_IsPlural[target][MIC_WARNINGS] == true)
-	{
-		s_IsPlural_MW[target] = "warnings";
-	} else {
-		s_IsPlural_MW[target] = "warning";
-	}
-	
 	PrintToChat(client, "%s You have warned \x07%N \x01for reason: %s", TAG_MESSAGE, target, arg2);
 	PrintToChat(target, "%s You have been warned by \x07%N \x01for reason: %s", TAG_MESSAGE, client, arg2);
 	
-	PrintToChat(target, "%s You currently have \x07%d \x01%s.", TAG_MESSAGE, warnings[target], s_IsPlural_W[target]);
+	PrintToChat(target, "%s You currently have \x07%d \x01warning(s).", TAG_MESSAGE, warnings[target]);
 	
 	if(GetConVarInt(sm_warn_maxwarnings_enabled) == 1)
 	{
@@ -359,37 +293,8 @@ public Action Command_Warn_Mic(int client, int args)
 		
 		PrintToChat(client, "%s You have mic warned \x07%N \x01for reason: %s", TAG_MESSAGE, target, arg2);
 		PrintToChat(target, "%s You have been mic warned by \x07%N \x01for reason: %s", TAG_MESSAGE, client, arg2);
-		
-		
-		if(warnings[target] == 1)
-		{
-			b_IsPlural[target][WARNINGS] = false;
-		} else {
-			b_IsPlural[target][WARNINGS] = true;
-		}
-		
-		if(warnings_mic[target] == 1)
-		{
-			b_IsPlural[target][MIC_WARNINGS] = false;
-		} else {
-			b_IsPlural[target][WARNINGS] = true;
-		}
-		
-		if(b_IsPlural[target][WARNINGS] == true)
-		{
-			s_IsPlural_W[target] = "warnings";
-		} else {
-			s_IsPlural_W[target] = "warning";
-		}
-			
-		if(b_IsPlural[target][MIC_WARNINGS] == true)
-		{
-			s_IsPlural_MW[target] = "warnings";
-		} else {
-			s_IsPlural_MW[target] = "warning";
-		}
 	
-		PrintToChat(target, "%s You currently have \x07%d \x01mic %s.", TAG_MESSAGE, warnings_mic[target], s_IsPlural_MW[target]);
+		PrintToChat(target, "%s You currently have \x07%d \x01mic warning(s).", TAG_MESSAGE, warnings_mic[target]);
 		
 		
 		for(int i = 1; i <= MaxClients; i++)
@@ -400,7 +305,7 @@ public Action Command_Warn_Mic(int client, int args)
 				{
 					if(i != client)
 					{
-						PrintToChat(i, "%s %N\x01 now has \x07%d \x01%s and \x07%d \x01mic %s on record.", TAG_MESSAGE, target, warnings[target], s_IsPlural_W[target], warnings_mic[target], s_IsPlural_MW[target]);
+						PrintToChat(i, "%s %N\x01 now has \x07%d \x01warning(s) and \x07%d \x01mic warning(s) on record.", TAG_MESSAGE, target, warnings[target], warnings_mic[target]);
 						PrintToChat(i, "%s %N\x01 has been mic warned \x07%N \x01for reason: %s", TAG_MESSAGE, client, target, arg2);
 					}
 				}
@@ -474,42 +379,14 @@ public Action Command_ResetWarnings(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	if(warnings[target] == 1)
-	{
-		b_IsPlural[target][WARNINGS] = false;
-	} else {
-		b_IsPlural[target][WARNINGS] = true;
-	}
-	
-	if(warnings_mic[target] == 1)
-	{
-		b_IsPlural[target][MIC_WARNINGS] = false;
-	} else {
-		b_IsPlural[target][WARNINGS] = true;
-	}
-	
-	if(b_IsPlural[target][WARNINGS])
-	{
-		s_IsPlural_W[target] = "warnings";
-	} else {
-		s_IsPlural_W[target] = "warning";
-	}
-		
-	if(b_IsPlural[target][MIC_WARNINGS])
-	{
-		s_IsPlural_MW[target] = "warnings";
-	} else {
-		s_IsPlural_MW[target] = "warning";
-	}
-	
 	if(warnings[target] == 0)
 	{
-		PrintToChat(client, "%s \x07%N \x01has no warnings to reset.", TAG_MESSAGE, target, s_IsPlural_W[target]);
+		PrintToChat(client, "%s \x07%N \x01has no warnings to reset.", TAG_MESSAGE, target);
 		return Plugin_Handled;
 	}
 	
-	PrintToChat(client, "%s You have reset all of \x07%N \x01%s.", TAG_MESSAGE, target, s_IsPlural_W[target]);
-	PrintToChat(target, "%s \x07%N \x01has reset all of your warnings.", TAG_MESSAGE, client, s_IsPlural_W[target]);
+	PrintToChat(client, "%s You have reset all of \x07%N \x01warning(s).", TAG_MESSAGE, target);
+	PrintToChat(target, "%s \x07%N \x01has reset all of your warning(s).", TAG_MESSAGE, client);
 	warnings[target] = 0;
 	warnings_mic[target] = 0;
 	roundwarnings[target] = 0;
@@ -534,35 +411,7 @@ public Action Command_Warnings(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	if(warnings[target] == 1)
-	{
-		b_IsPlural[target][WARNINGS] = false;
-	} else {
-		b_IsPlural[target][WARNINGS] = true;
-	}
-	
-	if(warnings_mic[target] == 1)
-	{
-		b_IsPlural[target][MIC_WARNINGS] = false;
-	} else {
-		b_IsPlural[target][WARNINGS] = true;
-	}
-	
-	if(b_IsPlural[client][WARNINGS])
-	{
-		s_IsPlural_W[client] = "warnings";
-	} else {
-		s_IsPlural_W[client] = "warning";
-	}
-	
-	if(b_IsPlural[client][MIC_WARNINGS])
-	{
-		s_IsPlural_MW[client] = "warnings";
-	} else {
-		s_IsPlural_MW[client] = "warning";
-	}
-	
-	PrintToChat(client, "%s %N\x01 has \x07%d \x01%s and \x07%d \x01mic %s on record.", TAG_MESSAGE, target, warnings[target], s_IsPlural_W[target], warnings_mic[target], s_IsPlural_MW[target]);
+	PrintToChat(client, "%s %N\x01 has \x07%d \x01warning(s) and \x07%d \x01mic warning(s) on record.", TAG_MESSAGE, target, warnings[target], warnings_mic[target]);
 	
 	return Plugin_Handled;
 }
