@@ -158,7 +158,7 @@ public Action Command_Warn(int client, int args)
 	
 	if(target == client)
 	{
-		PrintToChat(client, "%s %t", "Self Warn", TAG_MESSAGE);
+		PrintToChat(client, "%s You can't warn yourself!", TAG_MESSAGE);
 		return Plugin_Handled;
 	}
 	
@@ -259,7 +259,7 @@ public Action Command_Warn_Mic(int client, int args)
 		
 		if(target == client)
 		{
-			PrintToChat(client, "%s %t", "Self Warn", TAG_MESSAGE);
+			PrintToChat(client, "%s You can't warn yourself!", TAG_MESSAGE);
 			return Plugin_Handled;
 		}
 		
