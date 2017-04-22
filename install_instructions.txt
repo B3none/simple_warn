@@ -1,0 +1,14 @@
+//------------ B3none's Simple Warn ------------//
+
+Credits
+Potatoz - 
+
+Installation Guide:
+
+With SQL:
+  Step 1) 
+  
+Without SQL:
+  Step 1) Compile the simple_warn.sp file located here "/WithoutSQL/scripting/simple_warn.sp" using this online compiler https://spider.limetech.io/
+  Step 2) Copy the contents and paste them into the online compiler.
+  Step 3) 
