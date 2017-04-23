@@ -10,14 +10,11 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#define TAG_MESSAGE "[\x04Warnings\x01]"
+#define TAG_MESSAGE "[\x0CB3none_Warnings\x01]"
  
 int warnings[MAXPLAYERS+1];
 int warnings_mic[MAXPLAYERS+1]; 
 int roundwarnings[MAXPLAYERS+1];
-
-#define WARNINGS 0
-#define MIC_WARNINGS 1
 
 ConVar sm_warn_maxwarnings_enabled = null;
 ConVar sm_warn_maxwarnings = null;
