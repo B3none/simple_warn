@@ -98,7 +98,7 @@ public void OnMapStart()
 
 public Action WarningsNotify(Handle timer, int client)
 {
-	for(int i = 0; i <= MaxClients; i++)
+	for(int i = 1; i <= MaxClients; i++)
 	{
 		if (IsClientInGame(i))
 		{
