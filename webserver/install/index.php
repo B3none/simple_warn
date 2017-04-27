@@ -4,7 +4,7 @@ include('../includes/config.php');
 if($connect === true)
 {
 	$creation_query = 'CREATE TABLE IF NOT EXISTS `'.$db_name.'`.`'.$db_table.'`
-	( 
+	(
 		`warningid` INT NOT NULL AUTO_INCREMENT ,
 		`warningtype` TEXT NOT NULL ,
 		`server` TEXT NOT NULL ,
@@ -16,8 +16,8 @@ if($connect === true)
 		`admin_steamid` TEXT NOT NULL ,
 		PRIMARY KEY (`warningid`)
 	);';
-	
-	if(mysql_query($creation_query) === true)
+
+	if(mysqli_query($creation_query) === true)
 	{
 		echo'<h1>Sweet!</h1>
 		<br>
@@ -26,7 +26,7 @@ if($connect === true)
 		<p>Simply delete the "install" directory to progress (<b><u>This is for security reasons!</b></u>)</p>
 		';
 	}
-	
+
 	else
 	{
 		echo'<h1>FAILURE</h1>
