@@ -1,31 +1,31 @@
 <html>
     <head>
         <style>
-        table, th, td 
+        table, th, td
 	{
             border: 2px solid black;
             border-collapse: collapse;
         }
-		
-        th, td 
+
+        th, td
 	{
             padding: 5px;
-            text-align: left;    
+            text-align: left;
         }
-		
+
 		th
 		{
 			background-color: #4CAF50;
 			color: white;
 		}
-		
+
 		tr:nth-child(even)
 		{
 			background-color: #D3D3D3;
 		}
         </style>
     </head>
-	
+
     <body>
 	<?php
 	/*
@@ -33,27 +33,27 @@
 	*/
 
 	include('includes/config.php');
-	
+
 	echo"<title>$page_title</title>";
 	$page = $_GET['page'];
-		
+
 	if(empty($page))
 	{
 		header("Location: /index.php?page=1");
 	}
-	
+
 	else
 	{
 		$one = 1 + (($page - 1) * 20);
 		$one_one = $one + 20;
-		
+
 		$two = 20;
-		
+
 		$order_query = "SELECT * FROM `$db_table` ORDER BY `date` DESC LIMIT $one, $two";
-		
-		$connect_and_order = mysql_query($order_query, $connect);
-		$total_items = mysql_num_rows($connect_and_order);
-		
+
+		$connect_and_order = mysqli_query($connect, $order_query);
+		$total_items = mysqli_num_rows($connect_and_order);
+
 		if($total_items >= 1)
 		{
 			echo "
@@ -70,13 +70,13 @@
 					<th>Date</th>
 				</tr>
 			</td>";
-			
+
 			$id = $one - 1;
-			
-			while($row = mysql_fetch_array($connect_and_order))
+
+			while($row = mysqli_fetch_array($connect_and_order))
 			{
 				$id++;
-				
+
 				$warningtype = $row['warningtype'];
 				$server = $row['server'];
 				$client = $row['client'];
@@ -85,7 +85,7 @@
 				$reason = $row['reason'];
 				$admin_steamid = $row ['admin_steamid'];
 				$client_steamid = $row ['client_steamid'];
-				
+
 				echo"<tr>
 					<td>$id</td>
 					<td>$warningtype</td>
@@ -100,20 +100,20 @@
 				";
 			}
 			echo"</table>";
-			
+
 			$tpq = "SELECT * FROM `warnings`";
-			$tpq_done = mysql_query($tpq, $connect);
-			$total_pages = (mysql_num_rows($tpq_done)) / 20;
-			
-			
+			$tpq_done = mysqli_query($connect, $tpq);
+			$total_pages = (mysqli_num_rows($tpq_done)) / 20;
+
+
 			for($i = 1; $i <= $total_pages + 1; $i++)
 			{
 				echo "<a href='/index.php?page=$i'>$i</a> ";
 			}
 			echo "<br><p align='center'>Showing results $one to $one_one. (Page $page)</p>";
-			mysql_close($connect);
+			mysqli_close($connect);
 		}
-		
+
 		else
 		{
 			echo "No results found!";
@@ -121,7 +121,7 @@
 	}
 	?>
     </body
-	
+
     <footer>
 		<p align='center'>Coded by <a href='http://steamcommunity.com/profiles/76561198028510846'>B3none</a>.</p>
     </footer>
